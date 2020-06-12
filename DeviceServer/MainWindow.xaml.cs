@@ -50,7 +50,7 @@ namespace Relianz.DeviceServer
 
         } // ctor
 
-        public bool TagOnReader { get => m_tagOnReader; set => m_tagOnReader = value; }
+        public MifareUltralightEtcTag NfcTag { get => m_NfcTag; private set => m_NfcTag = value; }
         #endregion
 
         #region private members
@@ -69,7 +69,26 @@ namespace Relianz.DeviceServer
             Process.Start( "cmd", "/C start " + uri );
 
             DeviceServerApp.Logger.Information( "URI = " + uri );
-        }
+
+        } // Start_Browser
+
+        private void Write_Identity( object sender, RoutedEventArgs e )
+        {
+            int productType = 1;
+            long productID =  8083602783975920776;
+            byte[] supplierAddr = Helpers.StringToByteArray( "c218b5b7bc390cbb16dcd591f0dceeb24348ee72fcbdb6e6ed060ccd6eb4fef552e16021040b33a6" );
+
+            Product p = new Product( productType, productID, supplierAddr );
+            Task<int> t = Task.Run( () => NfcTag.WriteProductData( p ) );
+            t.Wait();
+
+            int err = t.Result;
+            if( err == 0 )
+                DeviceServerApp.Logger.Information( "Success" );
+            else
+                DeviceServerApp.Logger.Error( $"Error {err}" );
+
+        } // Write_Identity
 
         private void Rescan_Readers( object sender, System.Windows.Input.MouseButtonEventArgs e )
         {
@@ -101,7 +120,7 @@ namespace Relianz.DeviceServer
                     return;
                 }
                 
-                TagOnReader = true;
+                DeviceServerApp.AllPagesViewModel.TagOnReader = true;
 
                 Task t = HandleTag( args.SmartCard );
                 t.Wait();
@@ -120,7 +139,7 @@ namespace Relianz.DeviceServer
                 if( sender == DeviceServerApp.CardReader )
                 {
                     DeviceServerApp.Logger.Information( $"Tag removed from {DeviceServerApp.CardReader.Name}" );
-                    TagOnReader = false;
+                    DeviceServerApp.AllPagesViewModel.TagOnReader = false;
 
                     DeviceServerApp.AllPagesViewModel.NfcTagAtr = "(no tag present)";
                 }
@@ -171,10 +190,10 @@ namespace Relianz.DeviceServer
                     } // invalid tag
 
                     // Create instance that handles tag data:
-                    MifareUltralightEtcTag tag = new MifareUltralightEtcTag( connection );
+                    NfcTag = new MifareUltralightEtcTag( connection );
 
                     // Read data from tag                
-                    p = await tag.ReadProductData();
+                    p = await NfcTag.ReadProductData();
 
                 } // using
 
@@ -196,7 +215,7 @@ namespace Relianz.DeviceServer
 
         } // HandleTag
 
-        private bool m_tagOnReader;
+        private MifareUltralightEtcTag m_NfcTag;
         #endregion
 
     } // class MainWindow

@@ -48,8 +48,12 @@
                     TextWrapping="Wrap" IsReadOnly="True" VerticalContentAlignment="Center" Cursor="Cross" BorderThickness="0" 
                     Text="{Binding NfcTagAtr}"/>
             </WrapPanel>
+
+            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button x:Name="startBrowser"  Margin="0,10,0,0" Click="Start_Browser" Content="Start Browser" IsCancel="True" Width="110"/>
+                <Button x:Name="writeIdentity" Margin="20,10,0,0" Click="Write_Identity" Content="Write Identity to tag" IsCancel="True" Width="130" IsEnabled="{Binding TagOnReader}"/>
+            </WrapPanel>
             
-            <Button x:Name="startBrowser" Margin="0,10,0,0" Click="Start_Browser" Content="Start Browser" IsCancel="True" Width="110"/>
         </WrapPanel>
             
     </Grid>

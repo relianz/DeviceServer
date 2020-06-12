@@ -218,4 +218,4 @@ namespace Relianz.DeviceServer
 
     } // ProductDescription
 
-} // namespace Authenticator 
+} // namespace Relianz.DeviceServer 

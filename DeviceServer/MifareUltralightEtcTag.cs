@@ -118,15 +118,17 @@ namespace Relianz.DeviceServer.Etc
             bool DryRun = false;
             if( !DryRun )
             {
+                int numOfBytes = data.Length;
+                int numOfPages = numOfBytes / BytesPerPage;
+                int numOfCalls = numOfPages / pagesPerWriteAsync;
+
+                byte pageAddress = 0;
+
                 try
                 {
-                    int numOfBytes = data.Length;
-                    int numOfPages = numOfBytes / BytesPerPage;
-                    int numOfCalls = numOfPages / pagesPerWriteAsync;
-
                     for( byte j = 0; j < numOfCalls; j++ )
                     {
-                        byte pageAddress = (byte)(FirstPageOfUserData + j * pagesPerWriteAsync);
+                        pageAddress = (byte)(FirstPageOfUserData + j * pagesPerWriteAsync);
 
                         // Compute data source index:
                         int index = j * pagesPerWriteAsync * BytesPerPage;
@@ -146,6 +148,9 @@ namespace Relianz.DeviceServer.Etc
                 catch( Exception x )
                 {
                     string msg = x.Message;
+
+                    // Log error:
+                    DeviceServerApp.Logger.Error( $"At page addr {pageAddress} - {msg}" );
 
                     // Report error:
                     return ErrorExceptionWhileWritingData;
