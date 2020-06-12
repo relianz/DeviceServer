@@ -29,9 +29,6 @@ using Serilog;                      // ILogger
 
 namespace Relianz.DeviceServer
 {
-    /// <summary>
-    /// Interaction logic for DeviceServerApp.xaml
-    /// </summary>
     public partial class DeviceServerApp : Application
     {
         #region public members
@@ -41,6 +38,82 @@ namespace Relianz.DeviceServer
         public static ViewModel AllPagesViewModel { get => allPagesViewModel; private set => allPagesViewModel = value; }
         public static string AppLocalPath { get => appLocalPath; private set => appLocalPath = value; }
         public static SmartCardReader CardReader { get => m_cardReader; private set => m_cardReader = value; }
+
+        public static void GetSmartcardReaders()
+        {
+            string selector = SmartCardReader.GetDeviceSelector();
+
+            var t1 = Task.Run( () => SmartCardReaderUtils.GetAllSmartCardReaderInfo() );
+            t1.Wait();
+            DeviceInformationCollection deviceInfo = t1.Result;
+
+            int numOfReaders;
+
+            if( deviceInfo == null )
+            {
+                Logger.Fatal( "Couldn't query for smartcard readers" );
+                numOfReaders = 0;
+            }
+            else
+            {
+                numOfReaders = deviceInfo.Count;
+            }
+
+            if( numOfReaders == 0 )
+            {
+                string msg = "No smartcard readers found";
+                AllPagesViewModel.NfcReader = msg + " - double click here to rescan!";
+                Logger.Error( msg );
+
+                return;
+            }
+
+            m_cardReaders = new SmartCardReader[ numOfReaders ];
+            int i = 0;
+            foreach( var reader in deviceInfo )
+            {
+                try
+                {
+                    Task<SmartCardReader> t2 = SmartCardReader.FromIdAsync( reader.Id ).AsTask();
+                    t2.Wait();
+                    SmartCardReader r = t2.GetAwaiter().GetResult();
+
+                    m_cardReaders[ i ] = r;
+
+                    i++;
+                }
+                catch( Exception ex )
+                {
+                    Logger.Fatal( ex.Message );
+                    return;
+
+                } // catch
+
+            } // foreach reader.
+
+            // show NFC readers found:
+            String readers = "";
+            Logger.Information( $"Found {numOfReaders} reader(s)" );
+
+            for( int r = 0; r < numOfReaders; r++ )
+            {
+                if( r > 0 )
+                    readers += ", ";
+
+                string name = m_cardReaders[ r ].Name;
+                readers += name;
+
+                Logger.Information( name );
+
+            } // for all readers found
+
+            // Show readers found on UI:
+            AllPagesViewModel.NfcReader = readers;
+
+            // Select first reader for operations:
+            CardReader = m_cardReaders[ 0 ];
+
+        } // GetSmartCardReaders
         #endregion
         #region protected members
         protected override void OnStartup( StartupEventArgs e )
@@ -88,84 +161,6 @@ namespace Relianz.DeviceServer
         }
         #endregion
         #region private members
-
-        public static void GetSmartcardReaders()
-        {
-            // First try to find all readers that advertises as being NFC:
-            int numOfReaders;
-
-            string selector = SmartCardReader.GetDeviceSelector();
-
-            var t1 = Task.Run( () => SmartCardReaderUtils.GetAllSmartCardReaderInfo() );
-            t1.Wait();
-            DeviceInformationCollection deviceInfo = t1.Result;
-            if( deviceInfo == null )
-            {
-                Logger.Fatal( "Couldn't query for smartcard readers" );
-                numOfReaders = 0;
-            }
-            else
-            {
-                numOfReaders = deviceInfo.Count;
-            }
-
-            if( numOfReaders == 0 )
-            {
-                string msg = "No smartcard readers found";
-                AllPagesViewModel.NfcReader = msg + " - double click here to rescan!";
-                Logger.Error( msg );
-
-                return;
-            }
-
-            m_cardReaders = new SmartCardReader[ numOfReaders ];
-            int i = 0;
-            foreach( var reader in deviceInfo )
-            {
-                try
-                {
-                    Task<SmartCardReader> t2 = SmartCardReader.FromIdAsync( reader.Id ).AsTask();
-                    t2.Wait();
-                    SmartCardReader r = t2.GetAwaiter().GetResult();
-
-                    m_cardReaders[ i ] = r;
-
-                    i++;
-                }
-                catch( UnauthorizedAccessException ex )
-                {
-                    ;
-                  
-                } // catch
-
-            } // foreach reader.
-
-            // show NFC readers found:
-            String readers = "";
-            int nReaders = m_cardReaders.Length;
-
-            Logger.Information( $"Found {nReaders} reader(s)" );
-
-            for( int r = 0; r < nReaders; r++ )
-            {
-                if( r > 0 )
-                    readers += ", ";
-
-                string name = m_cardReaders[ r ].Name;
-                readers += name;
-
-                Logger.Information( name );
-
-            } // for all readers found
-
-            // Show readers found on UI:
-            AllPagesViewModel.NfcReader = readers;
-
-            // Select first reader for operations:
-            CardReader = m_cardReaders[ 0 ];
-
-        } // GetSmartCardReaders
-
         private static SmartCardReader[] m_cardReaders;
         private static SmartCardReader   m_cardReader;
 
@@ -183,7 +178,6 @@ namespace Relianz.DeviceServer
 
         // our root directory:
         private static string appLocalPath;
-
         #endregion
 
     } // class DeviceServerApp
