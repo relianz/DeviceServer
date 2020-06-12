@@ -1,0 +1,12 @@
+﻿<Application x:Class="Relianz.DeviceServer.DeviceServerApp"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Relianz.DeviceServer"
+             StartupUri="MainWindow.xaml"
+             Activated="App_Activated" 
+             Deactivated="App_Deactivated">
+    
+    <Application.Resources>
+        <local:ViewModel x:Key="ViewModel" />
+    </Application.Resources>
+</Application>

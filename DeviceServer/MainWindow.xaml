@@ -1,0 +1,56 @@
+﻿<Window x:Class="Relianz.DeviceServer.MainWindow"
+        
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        
+        Closing="Window_Closing"
+        
+        mc:Ignorable="d"
+        Title="NFC Device Server" Height="450" Width="919">
+ 
+        <Grid Margin="0,0,0,0">
+
+        <WrapPanel Orientation="Vertical" Margin="70,50,70,50" ItemHeight="50">
+
+            <WrapPanel Orientation="Horizontal">
+                <Label Content="Logfile location:" HorizontalAlignment="Right" VerticalAlignment="Top" Height="26"  Width="100" FontWeight="Bold" />
+                <TextBox x:Name="logFileLocation"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="552"  
+                     TextWrapping="Wrap" IsReadOnly="True" VerticalContentAlignment="Center" Cursor="Cross" BorderThickness="0" 
+                     Text="{Binding LogFileLocation}"/>
+            </WrapPanel>
+
+            <WrapPanel Orientation="Horizontal">
+                <Label Content="Root directory:" HorizontalAlignment="Right" VerticalAlignment="Top" Height="26"  Width="100" FontWeight="Bold" />
+                <TextBox x:Name="rootDirectory"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="552"  
+                     TextWrapping="Wrap" IsReadOnly="True" VerticalContentAlignment="Center" Cursor="Cross" BorderThickness="0" 
+                     Text="{Binding RootDirectory}"/>
+            </WrapPanel>
+            
+            <WrapPanel Orientation="Horizontal">
+                <Label Content="Server URI:" HorizontalAlignment="Right" VerticalAlignment="Top" Height="26"  Width="100" FontWeight="Bold" />
+                <TextBox x:Name="deviceServerUri"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="552"  
+                    TextWrapping="Wrap" IsReadOnly="True" VerticalContentAlignment="Center" Cursor="Cross" BorderThickness="0" 
+                    Text="{Binding DeviceServerUri}"/>
+            </WrapPanel>
+
+            <WrapPanel Orientation="Horizontal">
+                <Label Content="NFC Readers:" HorizontalAlignment="Right" VerticalAlignment="Top" Height="26"  Width="100" FontWeight="Bold" />
+                <TextBox x:Name="nfcReader"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="552"  
+                    TextWrapping="Wrap" IsReadOnly="True" VerticalContentAlignment="Center" Cursor="Cross" BorderThickness="0" 
+                    Text="{Binding NfcReader}"/>
+            </WrapPanel>
+
+            <WrapPanel Orientation="Horizontal">
+                <Label Content="NFC Tag ATR:" HorizontalAlignment="Right" VerticalAlignment="Top" Height="26"  Width="100" FontWeight="Bold" />
+                <TextBox x:Name="nfcTagAtr"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="552"  
+                    TextWrapping="Wrap" IsReadOnly="True" VerticalContentAlignment="Center" Cursor="Cross" BorderThickness="0" 
+                    Text="{Binding NfcTagAtr}"/>
+            </WrapPanel>
+            
+            <Button x:Name="startBrowser" Margin="0,10,0,0" Click="Start_Browser" Content="Start Browser" IsCancel="True" Width="110"/>
+        </WrapPanel>
+            
+    </Grid>
+</Window>
