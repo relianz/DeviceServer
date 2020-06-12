@@ -1,20 +1,20 @@
 ﻿/*
-	The MIT License
-	Copyright 2020, Dr.-Ing. Markus A. Stulle, Munich (markus@stulle.zone)
+    The MIT License
+    Copyright 2020, Dr.-Ing. Markus A. Stulle, Munich (markus@stulle.zone)
  
-	Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
-	and associated documentation files (the "Software"), to deal in the Software without restriction, 
-	including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-	and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
-	subject to the following conditions:
-	The above copyright notice and this permission notice shall be included in all copies 
-	or substantial portions of the Software.
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
+    and associated documentation files (the "Software"), to deal in the Software without restriction, 
+    including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+    and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+    subject to the following conditions:
+    The above copyright notice and this permission notice shall be included in all copies 
+    or substantial portions of the Software.
 
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-	IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-	WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
-	OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+    INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE 
+    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 using System;                       // Action
@@ -42,36 +42,55 @@ namespace Relianz.DeviceServer
         {
             InitializeComponent();
 
-			this.DataContext = DeviceServerApp.AllPagesViewModel;
+            this.DataContext = DeviceServerApp.AllPagesViewModel;
 
-            // Register card event handlers:
-            DeviceServerApp.CardReader.CardAdded += CardAdded;
-            DeviceServerApp.CardReader.CardRemoved += CardRemoved;
+            RegisterCardEventHandlers();
 
             DeviceServerApp.Logger.Information( "Main window constructed." );
 
-		} // ctor
+        } // ctor
 
         public bool TagOnReader { get => m_tagOnReader; set => m_tagOnReader = value; }
         #endregion
 
         #region private members
         private void Window_Closing( object sender, CancelEventArgs e )
-		{
-			e.Cancel = false;
+        {
+            e.Cancel = false;
 
-			DeviceServerApp.Logger.Information( "Main window closed." );
+            DeviceServerApp.Logger.Information( "Main window closed." );
 
-		} // Window_Closing
+        } // Window_Closing
 
-		private void Start_Browser( object sender, RoutedEventArgs e )
-		{
-			string uri = DeviceServerApp.AllPagesViewModel.DeviceServerUri + "index.html";
+        private void Start_Browser( object sender, RoutedEventArgs e )
+        {
+            string uri = DeviceServerApp.AllPagesViewModel.DeviceServerUri + "index.html";
 
-			Process.Start( "cmd", "/C start " + uri );
+            Process.Start( "cmd", "/C start " + uri );
 
-			DeviceServerApp.Logger.Information( "URI = " + uri );
-		}
+            DeviceServerApp.Logger.Information( "URI = " + uri );
+        }
+
+        private void Rescan_Readers( object sender, System.Windows.Input.MouseButtonEventArgs e )
+        {
+            DeviceServerApp.GetSmartcardReaders();
+            RegisterCardEventHandlers();
+
+        } // Rescan_Readers
+
+        private void RegisterCardEventHandlers()
+        {
+            if( DeviceServerApp.CardReader != null )
+            {
+                DeviceServerApp.AllPagesViewModel.NfcTagAtr = "(no tag present)";
+
+                // Register card event handlers:
+                DeviceServerApp.CardReader.CardAdded += CardAdded;
+                DeviceServerApp.CardReader.CardRemoved += CardRemoved;
+
+            } // CardReader exists
+
+        } // RegisterCardEventHandlers
 
         private void CardAdded( SmartCardReader sender, CardAddedEventArgs args )
         {
