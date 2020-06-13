@@ -79,12 +79,15 @@ namespace Relianz.DeviceServer
             byte[] supplierAddr = Helpers.StringToByteArray( "c218b5b7bc390cbb16dcd591f0dceeb24348ee72fcbdb6e6ed060ccd6eb4fef552e16021040b33a6" );
 
             Product p = new Product( productType, productID, supplierAddr );
+
             Task<int> t = Task.Run( () => NfcTag.WriteProductData( p ) );
             t.Wait();
 
             int err = t.Result;
             if( err == 0 )
+            {
                 DeviceServerApp.Logger.Information( "Success" );
+            }
             else
                 DeviceServerApp.Logger.Error( $"Error {err}" );
 

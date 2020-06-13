@@ -115,6 +115,8 @@ namespace Relianz.DeviceServer.Etc
 
             // TODO: Create padded write buffer!
 
+            int bytesWritten = 0;
+
             bool DryRun = false;
             if( !DryRun )
             {
@@ -141,7 +143,8 @@ namespace Relianz.DeviceServer.Etc
                         } // last write 
 #endif
                         // Write data to tag:
-                        await m_handler.WriteAsync( pageAddress, bytesForThisCall );
+                        m_handler.WriteAsync( pageAddress, bytesForThisCall );
+                        bytesWritten += bytesForThisCall.Length;
 
                     } // for all write ops 
                 }
@@ -160,6 +163,7 @@ namespace Relianz.DeviceServer.Etc
             } // !dryRun )
 
             // Report success:
+            DeviceServerApp.Logger.Information( $"{bytesWritten} bytes written" );
             return 0;
 
         } // IEtcTag.WriteProductData
