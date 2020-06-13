@@ -2,12 +2,14 @@
 A WPF app with an integrated HTTP server that enables the web browser to access local smartcard devices that would otherwise not be accessible via JavaScript.
 
 ## Status
-The Software is WIP, developnment started on June 11, 2020. 
+The Software is **WIP**, developnment started on June 11, 2020. 
 
 What already runs is:
 * Identification of Smartcard readers
 * Identification of NFC tags
 * Running the HTTP Server
+
+Because development takes place in my free time (and I love my family), progress is slow.
 
 ## Softwarestack
 DeviceServer is written in C# [Version 8.0](https://stackoverflow.com/questions/247621/what-are-the-correct-version-numbers-for-c). It uses the following technologies and software modules:
