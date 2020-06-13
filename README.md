@@ -2,7 +2,7 @@
 A WPF app with an integrated HTTP server that enables the web browser to access local smartcard devices that would otherwise not be accessible via JavaScript.
 
 ## Status
-The Software is **WIP**, developnment started on June 11, 2020. 
+The Software is **WIP**, development started on June 11, 2020. 
 
 What already runs is:
 * Identification of Smartcard readers
@@ -21,6 +21,9 @@ DeviceServer is written in C# [Version 8.0](https://stackoverflow.com/questions/
 * [Json.NET](https://www.newtonsoft.com/json)
 
 You do not have to obtain any packages manually, the project file [DeviceServer.csproj](./DeviceServer/DeviceServer.csproj) does this automatically. 
+
+### Why not building an UWP app?
+When a UWP app provides a network service, only its own code or an app on another machine can access the service.
 
 ## Platform & Tools
 * Microsoft Windows 10 
