@@ -8,8 +8,9 @@ DeviecServer uses the following technologies and software modules:
 * [Windows Presentation Foundation](https://docs.microsoft.com/en-us/dotnet/desktop-wpf/overview/?view=vs-2019) 
 * [Microsoft.Windows.SDK.Contracts](https://docs.microsoft.com/en-us/windows/apps/desktop/modernize/desktop-to-uwp-enhance)
 * [Serilog](https://github.com/serilog/serilog)
+* [Json.NET](https://www.newtonsoft.com/json)
 
-You do not have to obtain packages manually, the solution file does this automatically. 
+You do not have to obtain any packages manually, the project file [DeviceServer.csproj](./DeviceServer/DeviceServer.csproj) does this automatically. 
 
 ## Platform & Tools
 * Microsoft Windows 10 
