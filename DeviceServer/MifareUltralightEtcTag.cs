@@ -193,6 +193,8 @@ namespace Relianz.DeviceServer.Etc
             int numOfPages;
             int numOfCalls;
 
+            byte[] response = null;
+
             bool DryRun = false;
             if( !DryRun )
             {
@@ -206,7 +208,7 @@ namespace Relianz.DeviceServer.Etc
                     {
                         // Read data from tag:
                         byte pageAddress = (byte)(FirstPageOfUserData + j * pagesPerReadAsync);
-                        byte[] response = await m_handler.ReadAsync( pageAddress );
+                        response = m_handler.ReadSync( pageAddress );
 
                         // Store bytes read in buffer:
                         int readBufferIndex = j * bytesPerReadAsync;
@@ -217,6 +219,9 @@ namespace Relianz.DeviceServer.Etc
                 catch( Exception x )
                 {
                     string msg = x.Message;
+
+                    // Log error:
+                    DeviceServerApp.Logger.Error( msg );
 
                     // Report error:
                     return null;

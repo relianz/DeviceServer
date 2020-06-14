@@ -120,6 +120,21 @@ namespace Relianz.DeviceServer
 
         } // TagOnReader 
 
+        public string NfcTagData 
+        { 
+            get => m_NfcTagData;
+            set
+            {
+                if( value != m_NfcTagData )
+                {
+                    m_NfcTagData = value;
+                    OnPropertyChanged( "NfcTagData" );
+                }
+
+            } // set
+
+        } // NfcTagData 
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged( string propertyName )
         {
@@ -137,6 +152,7 @@ namespace Relianz.DeviceServer
 
         private string m_NfcReader;
         private string m_NfcTagAtr;
+        private string m_NfcTagData;
 
         private bool m_tagOnReader;
         #endregion

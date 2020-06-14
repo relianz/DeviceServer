@@ -72,6 +72,22 @@ namespace Relianz.DeviceServer
 
         } // Start_Browser
 
+        private void Read_Identity( object sender, RoutedEventArgs e )
+        {
+            Task<Product> t = Task.Run( () => NfcTag.ReadProductData() );
+            t.Wait();
+
+            Product p = t.Result;
+            if( p != null )
+            {
+                DeviceServerApp.Logger.Information( "Success" );
+                DeviceServerApp.AllPagesViewModel.NfcTagData = p.ToString();
+            }
+            else
+                DeviceServerApp.Logger.Error( $"Error" );
+
+        } // Read_Identity
+
         private void Write_Identity( object sender, RoutedEventArgs e )
         {
             int productType = 1;

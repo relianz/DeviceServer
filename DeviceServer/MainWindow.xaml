@@ -8,7 +8,7 @@
         Closing="Window_Closing"
         
         mc:Ignorable="d"
-        Title="NFC Device Server" Height="450" Width="919">
+        Title="NFC Device Server" Height="600" Width="919">
  
         <Grid Margin="0,0,0,0">
 
@@ -49,8 +49,16 @@
                     Text="{Binding NfcTagAtr}"/>
             </WrapPanel>
 
+            <WrapPanel Orientation="Horizontal">
+                <Label Content="Tag data:" HorizontalAlignment="Right" VerticalAlignment="Top" Height="26"  Width="100" FontWeight="Bold" />
+                <TextBox x:Name="nfcTagData"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="552"  
+                    TextWrapping="Wrap" IsReadOnly="True" VerticalContentAlignment="Center" Cursor="Cross" BorderThickness="0" 
+                    Text="{Binding NfcTagData}"/>
+            </WrapPanel>
+
             <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button x:Name="startBrowser"  Margin="0,10,0,0" Click="Start_Browser" Content="Start Browser" IsCancel="True" Width="110"/>
+                <Button x:Name="readIdentity" Margin="20,10,0,0" Click="Read_Identity" Content="Read Identity from tag" IsCancel="True" Width="130" IsEnabled="{Binding TagOnReader}"/>
                 <Button x:Name="writeIdentity" Margin="20,10,0,0" Click="Write_Identity" Content="Write Identity to tag" IsCancel="True" Width="130" IsEnabled="{Binding TagOnReader}"/>
             </WrapPanel>
             

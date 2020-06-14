@@ -59,6 +59,22 @@ namespace MifareUltralight
 
             return apduRes.ResponseData;
         }
+
+        public byte[] ReadSync( byte pageAddress )
+        {
+            Task<Iso7816.ApduResponse> t = connectionObject.TransceiveAsync( new MifareUltralight.Read( pageAddress ) );
+            t.Wait();
+            var apduRes = t.Result;
+
+            if( !apduRes.Succeeded )
+            {
+                throw new Exception( "Failure reading MIFARE Ultralight card, " + apduRes.ToString() );
+            }
+
+            return apduRes.ResponseData;
+
+        } // ReadSync
+
         /// <summary>
         /// Wrapper method write 4 bytes at the pageAddress
         /// </param name="pageAddress">
