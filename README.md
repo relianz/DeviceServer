@@ -23,8 +23,11 @@ DeviceServer is written in C# [Version 8.0](https://stackoverflow.com/questions/
 You do not have to obtain any packages manually, the project file [DeviceServer.csproj](./DeviceServer/DeviceServer.csproj) does this automatically. 
 
 ### Why not building an UWP app?
-When a UWP app provides a network service, only its own code or an app on another machine can access the service.
+When a [UWP](https://docs.microsoft.com/en-us/windows/uwp/) app provides a network service, only _its own code_ or an app _on another machine_ can access the service. Since the app and the web browser should run on the same machine, UWP is not an alternative.
 
 ## Platform & Tools
 * Microsoft Windows 10 
 * [Microsoft Visual Studio Community 2019](https://visualstudio.microsoft.com/vs/community/)
+
+### How to build?
+Clone the repository, open [DeviceServer.sln](./DeviceServer.sln) in VS16 and build the solution.  
