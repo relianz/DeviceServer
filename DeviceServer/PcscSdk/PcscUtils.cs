@@ -19,6 +19,7 @@ using Windows.Devices.SmartCards;
 using Windows.Storage.Streams;
 
 using Windows.Devices.Enumeration;
+using Relianz.DeviceServer;
 
 namespace Pcsc
 {
@@ -34,7 +35,7 @@ namespace Pcsc
         /// SmartCardConnection object
         /// </param>
         /// <returns>APDU response object of type defined by the APDU command object</returns>
-        public static async Task<Iso7816.ApduResponse> TransceiveAsync(this SmartCardConnection connection, Iso7816.ApduCommand apduCommand)
+        public static async Task<Iso7816.ApduResponse> TransceiveAsyncOriginal(this SmartCardConnection connection, Iso7816.ApduCommand apduCommand)
         {
             Iso7816.ApduResponse apduRes = Activator.CreateInstance(apduCommand.ApduResponseType) as Iso7816.ApduResponse;
 
@@ -44,6 +45,21 @@ namespace Pcsc
 
             return apduRes;
         }
+
+        public static async Task<Iso7816.ApduResponse> TransceiveAsync( this SmartCardConnection connection, Iso7816.ApduCommand apduCommand )
+        {
+            Iso7816.ApduResponse apduRes = Activator.CreateInstance( apduCommand.ApduResponseType ) as Iso7816.ApduResponse;
+
+            IBuffer cmdBuffer = apduCommand.GetBuffer();
+            DeviceServerApp.Logger.Information( "Transmitting <" + cmdBuffer.ToString() + ">" );
+            IBuffer responseBuf = await connection.TransmitAsync( cmdBuffer ); // <- throws exception (0x80004004 (E_ABORT))
+
+            apduRes.ExtractResponse( responseBuf );
+
+            return apduRes;
+
+        } // TransceiveAsync
+
 
         /// <summary>
         /// Extension method to SmartCardConnection class to perform a transparent exchange to the ICC

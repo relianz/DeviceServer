@@ -90,10 +90,12 @@ namespace Relianz.DeviceServer
             {
                 listenerTask.Wait();
             }
-            catch
+            catch( Exception x )
             {
-                ;
+                DeviceServerApp.Logger.Fatal( x.Message );
             }
+
+            DeviceServerApp.Logger.Information( "Server stopped." );
 
         } // Stop
 

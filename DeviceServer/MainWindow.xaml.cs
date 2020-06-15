@@ -58,6 +58,7 @@ namespace Relianz.DeviceServer
         {
             e.Cancel = false;
 
+            DeviceServerApp.WebServer.Stop();
             DeviceServerApp.Logger.Information( "Main window closed." );
 
         } // Window_Closing
@@ -75,16 +76,20 @@ namespace Relianz.DeviceServer
         private void Read_Identity( object sender, RoutedEventArgs e )
         {
             Task<Product> t = Task.Run( () => NfcTag.ReadProductData() );
+
+            int? tCurrentId = Task.CurrentId;
+            int tId = (tCurrentId == null) ? -1 : (int)tCurrentId;
+            DeviceServerApp.Logger.Information( $"In task {tId} - Waiting for task {t.Id} to complete" );
             t.Wait();
 
             Product p = t.Result;
             if( p != null )
             {
                 DeviceServerApp.Logger.Information( "Success" );
-                DeviceServerApp.AllPagesViewModel.NfcTagData = p.ToString();
+                DeviceServerApp.AllPagesViewModel.NfcTagData = p.ProductID.ToString();
             }
             else
-                DeviceServerApp.Logger.Error( $"Error" );
+                DeviceServerApp.Logger.Error( $"Reading Identity failed" );
 
         } // Read_Identity
 
@@ -97,15 +102,20 @@ namespace Relianz.DeviceServer
             Product p = new Product( productType, productID, supplierAddr );
 
             Task<int> t = Task.Run( () => NfcTag.WriteProductData( p ) );
+
+            int? tCurrentId = Task.CurrentId;
+            int tId = (tCurrentId == null) ? -1 : (int)tCurrentId;
+            DeviceServerApp.Logger.Information( $"In task {tId} - Waiting for task {t.Id} to complete" );
             t.Wait();
 
             int err = t.Result;
             if( err == 0 )
             {
                 DeviceServerApp.Logger.Information( "Success" );
+                DeviceServerApp.AllPagesViewModel.NfcTagData = p.ProductID.ToString();
             }
             else
-                DeviceServerApp.Logger.Error( $"Error {err}" );
+                DeviceServerApp.Logger.Error( $"Writing Identity failed {err}" );
 
         } // Write_Identity
 
@@ -138,7 +148,8 @@ namespace Relianz.DeviceServer
                 {                    
                     return;
                 }
-                
+
+                DeviceServerApp.Logger.Information( $"Tag added to {DeviceServerApp.CardReader.Name}" );
                 DeviceServerApp.AllPagesViewModel.TagOnReader = true;
 
                 Task t = HandleTag( args.SmartCard );
@@ -160,7 +171,8 @@ namespace Relianz.DeviceServer
                     DeviceServerApp.Logger.Information( $"Tag removed from {DeviceServerApp.CardReader.Name}" );
                     DeviceServerApp.AllPagesViewModel.TagOnReader = false;
 
-                    DeviceServerApp.AllPagesViewModel.NfcTagAtr = "(no tag present)";
+                    DeviceServerApp.AllPagesViewModel.NfcTagAtr  = "(no tag present)";
+                    DeviceServerApp.AllPagesViewModel.NfcTagData = "";
                 }
             }
             catch( Exception x )
@@ -211,20 +223,7 @@ namespace Relianz.DeviceServer
                     // Create instance that handles tag data:
                     NfcTag = new MifareUltralightEtcTag( connection );
 
-                    // Read data from tag                
-                    p = await NfcTag.ReadProductData();
-
                 } // using
-
-                if( p != null )
-                {
-                    int productType = p.ProductType;        // 1;
-                    long productID = p.ProductID;           // 8083602783975920776;
-                    byte[] supplierAddr = p.SupplierAddr;   // Helpers.StringToByteArray( "c218b5b7bc390cbb16dcd591f0dceeb24348ee72fcbdb6e6ed060ccd6eb4fef552e16021040b33a6" );
-
-                    string hint = $"Confirmation from ETC regarding the product with ID {productID}";
-                }
-
             }
             catch( Exception x )
             {

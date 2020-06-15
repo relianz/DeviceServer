@@ -8,48 +8,48 @@
         Closing="Window_Closing"
         
         mc:Ignorable="d"
-        Title="NFC Device Server" Height="600" Width="919">
+        Title="NFC Device Server" Height="600" Width="1200">
  
         <Grid Margin="0,0,0,0">
 
         <WrapPanel Orientation="Vertical" Margin="70,50,70,50" ItemHeight="50">
 
-            <WrapPanel Orientation="Horizontal">
+            <WrapPanel Orientation="Horizontal" Width="1050">
                 <Label Content="Logfile location:" HorizontalAlignment="Right" VerticalAlignment="Top" Height="26"  Width="100" FontWeight="Bold" />
-                <TextBox x:Name="logFileLocation"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="552"  
+                <TextBox x:Name="logFileLocation"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="800"  
                      TextWrapping="Wrap" IsReadOnly="True" VerticalContentAlignment="Center" Cursor="Cross" BorderThickness="0" 
                      Text="{Binding LogFileLocation}"/>
             </WrapPanel>
 
-            <WrapPanel Orientation="Horizontal">
+            <WrapPanel Orientation="Horizontal" Width="1050">
                 <Label Content="Root directory:" HorizontalAlignment="Right" VerticalAlignment="Top" Height="26"  Width="100" FontWeight="Bold" />
-                <TextBox x:Name="rootDirectory"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="552"  
+                <TextBox x:Name="rootDirectory"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="800"  
                      TextWrapping="Wrap" IsReadOnly="True" VerticalContentAlignment="Center" Cursor="Cross" BorderThickness="0" 
                      Text="{Binding RootDirectory}"/>
             </WrapPanel>
-            
-            <WrapPanel Orientation="Horizontal">
+
+            <WrapPanel Orientation="Horizontal" Width="1050">
                 <Label Content="Server URI:" HorizontalAlignment="Right" VerticalAlignment="Top" Height="26"  Width="100" FontWeight="Bold" />
                 <TextBox x:Name="deviceServerUri"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="552"  
                     TextWrapping="Wrap" IsReadOnly="True" VerticalContentAlignment="Center" Cursor="Cross" BorderThickness="0" 
                     Text="{Binding DeviceServerUri}"/>
             </WrapPanel>
 
-            <WrapPanel Orientation="Horizontal">
+            <WrapPanel Orientation="Horizontal" Width="1050">
                 <Label Content="NFC Readers:" HorizontalAlignment="Right" VerticalAlignment="Top" Height="26"  Width="100" FontWeight="Bold" />
                 <TextBox x:Name="nfcReader"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="552"  
                     TextWrapping="Wrap" IsReadOnly="True" VerticalContentAlignment="Center" Cursor="Cross" BorderThickness="0" MouseDoubleClick="Rescan_Readers" 
                     Text="{Binding NfcReader}"/>
             </WrapPanel>
 
-            <WrapPanel Orientation="Horizontal">
+            <WrapPanel Orientation="Horizontal" Width="1050">
                 <Label Content="NFC Tag ATR:" HorizontalAlignment="Right" VerticalAlignment="Top" Height="26"  Width="100" FontWeight="Bold" />
                 <TextBox x:Name="nfcTagAtr"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="552"  
                     TextWrapping="Wrap" IsReadOnly="True" VerticalContentAlignment="Center" Cursor="Cross" BorderThickness="0" 
                     Text="{Binding NfcTagAtr}"/>
             </WrapPanel>
 
-            <WrapPanel Orientation="Horizontal">
+            <WrapPanel Orientation="Horizontal" Width="1050">
                 <Label Content="Tag data:" HorizontalAlignment="Right" VerticalAlignment="Top" Height="26"  Width="100" FontWeight="Bold" />
                 <TextBox x:Name="nfcTagData"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="552"  
                     TextWrapping="Wrap" IsReadOnly="True" VerticalContentAlignment="Center" Cursor="Cross" BorderThickness="0" 

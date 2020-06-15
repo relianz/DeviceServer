@@ -11,11 +11,13 @@
 
 using System.Threading.Tasks;
 using Windows.Devices.SmartCards;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Storage.Streams;
 
 using Pcsc;
 using System;
+
+using Relianz.DeviceServer.Etc;     // MifareUltralightEtcTag
+using Relianz.DeviceServer;
+using System.Reflection.Metadata.Ecma335;
 
 namespace MifareUltralight
 {
@@ -48,7 +50,7 @@ namespace MifareUltralight
         /// <returns>
         /// byte array of 16 bytes
         /// </returns>
-        public async Task<byte[]> ReadAsync( byte pageAddress )
+        public async Task<byte[]> ReadAsyncOriginal( byte pageAddress )
         {
             var apduRes = await connectionObject.TransceiveAsync( new MifareUltralight.Read( pageAddress ) );
 
@@ -58,14 +60,17 @@ namespace MifareUltralight
             }
 
             return apduRes.ResponseData;
-        }
 
-        public byte[] ReadSync( byte pageAddress )
+        } // ReadAsyncOriginal
+
+        public async Task<byte[]> ReadAsync( byte pageAddress )
         {
-            Task<Iso7816.ApduResponse> t = connectionObject.TransceiveAsync( new MifareUltralight.Read( pageAddress ) );
-            t.Wait();
-            var apduRes = t.Result;
+            Iso7816.ApduCommand cmd = new MifareUltralight.Read( pageAddress );
 
+            DeviceServerApp.Logger.Information( "Transceiving <" + cmd.ToString() + ">" );
+            var apduRes = await connectionObject.TransceiveAsync( cmd );
+
+            DeviceServerApp.Logger.Information( "Got response <" + apduRes.ToString() + ">" );
             if( !apduRes.Succeeded )
             {
                 throw new Exception( "Failure reading MIFARE Ultralight card, " + apduRes.ToString() );
@@ -73,7 +78,29 @@ namespace MifareUltralight
 
             return apduRes.ResponseData;
 
-        } // ReadSync
+        } // ReadAsync
+
+        /*
+        public async Task ReadAsyncExtended( byte pageAddress )
+        {
+            Iso7816.ApduCommand cmd = new MifareUltralight.Read( pageAddress );
+
+            DeviceServerApp.Logger.Information( "Transceiving <" + cmd.ToString() +">" );
+            var apduRes = await connectionObject.TransceiveAsync( cmd );
+         
+            if( !apduRes.Succeeded )
+            {
+                throw new Exception( "Failure reading MIFARE Ultralight card, " + apduRes.ToString() );
+            }
+
+            int len = apduRes.ResponseData.Length;
+            MifareUltralightEtcTag.responseBuffer[ 0 ] = (byte)len;
+            apduRes.ResponseData.CopyTo( MifareUltralightEtcTag.responseBuffer, 1 );
+
+            return;
+
+        } // ReadAsyncExtended
+        */
 
         /// <summary>
         /// Wrapper method write 4 bytes at the pageAddress
@@ -82,7 +109,7 @@ namespace MifareUltralight
         /// </param>
         /// byte array of the data to write
         /// </returns>
-        public async Task WriteAsync( byte pageAddress, byte[] data )
+        public async Task WriteAsyncOriginal( byte pageAddress, byte[] data )
         {
             if( data.Length != 4 )
             {
@@ -93,7 +120,28 @@ namespace MifareUltralight
 
             if( !apduRes.Succeeded )
             {
-                Exception exception = new Exception("Failure writing MIFARE Ultralight card, " + apduRes.ToString());
+                Exception exception = new Exception( "Failure writing MIFARE Ultralight card, " + apduRes.ToString() );
+                throw exception;
+            }
+
+        } // WriteAsyncOriginal
+
+        public async Task WriteAsync( byte pageAddress, byte[] data )
+        {
+            if( data.Length != 4 )
+            {
+                throw new NotSupportedException();
+            }
+
+            Iso7816.ApduCommand cmd = new MifareUltralight.Write( pageAddress, ref data );
+
+            DeviceServerApp.Logger.Information( "Transceiving <" + cmd.ToString() + ">" );
+            var apduRes = await connectionObject.TransceiveAsync( cmd );
+
+            DeviceServerApp.Logger.Information( "Got response <" + apduRes.ToString() + ">" );
+            if( !apduRes.Succeeded )
+            {
+                Exception exception = new Exception( "Failure writing MIFARE Ultralight card, " + apduRes.ToString() );
                 throw exception;
             }
 

@@ -143,7 +143,7 @@ namespace Relianz.DeviceServer.Etc
                         } // last write 
 #endif
                         // Write data to tag:
-                        m_handler.WriteAsync( pageAddress, bytesForThisCall );
+                        await m_handler.WriteAsync( pageAddress, bytesForThisCall );
                         bytesWritten += bytesForThisCall.Length;
 
                     } // for all write ops 
@@ -208,9 +208,10 @@ namespace Relianz.DeviceServer.Etc
                     {
                         // Read data from tag:
                         byte pageAddress = (byte)(FirstPageOfUserData + j * pagesPerReadAsync);
-                        response = m_handler.ReadSync( pageAddress );
-
-                        // Store bytes read in buffer:
+                        
+                        response = await m_handler.ReadAsync( pageAddress );
+                        
+                        // copy tag response to read buffer:
                         int readBufferIndex = j * bytesPerReadAsync;
                         response.CopyTo( readBuffer, readBufferIndex );
 
