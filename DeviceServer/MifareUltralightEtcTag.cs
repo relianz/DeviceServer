@@ -38,79 +38,19 @@ namespace Relianz.DeviceServer.Etc
         } // ctor
 
         #region Implementation of IEtcTag
-        public async Task<int> WriteProductData( Product p )
+
+        public async Task<int> WriteThingData( Thing t )
         {
-            byte[] supplierAddress = p.SupplierAddr;
-            int productType = p.ProductType;
-            long productID = p.ProductID;
+            byte[]  data = t.ToByteArray();
 
-            await CreateHandler();
-
-            // Assert arguments:
-            if( supplierAddress != null )
-            {
-                if( supplierAddress.Length != Product.AddressLength )
-                {
-                    return ErrorInvalidAddressLength;
-                }
-
-            } // supplierAddress != null
-            else
-            {
-                return ErrorSupplierAddressNull;
-            }
-
-            // Create byte array from product data passed:
-            int dataSize = SizeOfProductData;
+            int dataSize = data.Length;
             if( dataSize > EtcDataMaxNumOfBytes )
             {
                 // Tag user memory too small to store data:
                 return ErrorTagUserMemoryTooSmall;
             }
 
-            // Allocate write buffer:
-            byte[] data = new byte[ dataSize ];
-            int i, offset = 0;
-
-
-            // Serialize type of product: 
-            if( m_useBitConverter )
-            {
-                byte[] byteArray = BitConverter.GetBytes( productType );
-                byteArray.CopyTo( data, offset );
-
-                offset += byteArray.Length;
-            }
-            else
-            {
-                for( i = 0; i < sizeof( int ); i++ )
-                {
-                    data[ offset + i ] = (byte)(productType >> i * 8);
-
-                } // forall bytes in productType
-                offset += i;
-            }
-
-            // Serialize ID of product: 
-            if( m_useBitConverter )
-            {
-                byte[] byteArray = BitConverter.GetBytes( productID );
-                byteArray.CopyTo( data, offset );
-
-                offset += byteArray.Length;
-            }
-            else
-            {
-                for( i = 0; i < sizeof( long ); i++ )
-                {
-                    data[ offset + i ] = (byte)(productID >> i * 8);
-
-                } // forall bytes in productType
-                offset += i;
-            }
-
-            // Copy supplier address:
-            supplierAddress.CopyTo( data, offset );
+            await CreateHandler();
 
             // at the time being, every call to the handler writes a single page:
             const int pagesPerWriteAsync = 1;
@@ -168,28 +108,32 @@ namespace Relianz.DeviceServer.Etc
             DeviceServerApp.Logger.Information( $"{bytesWritten} bytes written" );
             return 0;
 
-        } // IEtcTag.WriteProductData
+        } // IEtcTag.WriteThingData
 
-        public async Task<Product> ReadProductData()
+        public async Task<Thing> ReadThingData()
         {
             // at the time being, every call to the handler reads four pages:
             const int pagesPerReadAsync = 4;
             int bytesPerReadAsync = pagesPerReadAsync * BytesPerPage;
 
             // Calculate read buffer size:
+            int thingSize = Thing.SizeOf();
             int readBufferSize = 0;
             while( readBufferSize <= EtcDataMaxNumOfBytes )
             {
                 readBufferSize += bytesPerReadAsync;
-                if( readBufferSize >= SizeOfProductData )
+                if( readBufferSize >= thingSize )
                 {
                     break;
                 }
 
             } // readBufferSize <= EtcDataMaxNumOfBytes
 
-            Debug.Assert( readBufferSize >= SizeOfProductData );
+            Debug.Assert( readBufferSize >= thingSize );
             byte[] readBuffer = new byte[ readBufferSize ];
+
+            DeviceServerApp.Logger.Information( $"Thing size = {thingSize}" );
+            DeviceServerApp.Logger.Information( $"Read buffer size = {readBufferSize}" );
 
             int numOfBytes;
             int numOfPages;
@@ -212,9 +156,9 @@ namespace Relianz.DeviceServer.Etc
                     {
                         // Read data from tag:
                         byte pageAddress = (byte)(FirstPageOfUserData + j * pagesPerReadAsync);
-                        
+
                         response = await m_handler.ReadAsync( pageAddress );
-                        
+
                         // copy tag response to read buffer:
                         int readBufferIndex = j * bytesPerReadAsync;
                         response.CopyTo( readBuffer, readBufferIndex );
@@ -235,74 +179,20 @@ namespace Relianz.DeviceServer.Etc
 
             } // !DryRun
 
-            // Process data read from tag:            
-            int i, offset = 0;
+            Thing t = Thing.FromByteArray( readBuffer );
 
-            // Deserialize type of product: 
-            int productType = 0;
+            return t;
 
-            if( m_useBitConverter )
-            {
-                productType = BitConverter.ToInt32( readBuffer, offset );
-                offset += sizeof( int );
-            }
-            else
-            {
-                for( i = 0; i < sizeof( int ); i++ )
-                {
-                    int k = readBuffer[ offset + i ] << (i * 8);
-                    productType |= k;
+        } // IEtcTag.ReadThingData
 
-                } // forall bytes in productType
-                offset += i;
-            }
-
-            // Deserialize ID of product:
-            long productID = 0;
-
-            if( m_useBitConverter )
-            {
-                productID = BitConverter.ToInt64( readBuffer, offset );
-                offset += sizeof( long );
-            }
-            else
-            {
-                for( i = 0; i < sizeof( long ); i++ )
-                {
-                    long k = readBuffer[ offset + i ] << (i * 8);
-                    productID |= k;
-
-                } // forall bytes in productType
-                offset += i;
-            }
-
-            byte[] supplierAddress = new byte[ Product.AddressLength ];
-
-            // Copy supplier address:
-            Array.Copy( readBuffer, offset,
-                        supplierAddress, 0,
-                        Product.AddressLength );
-
-            Product p = new Product( productType, productID, supplierAddress );
-            return p;
-
-        } // IEtcTag.ReadProductData
         #endregion
 
         #region Getter/setter
-        public int SizeOfProductData
-        {
-            get => sizeof( int ) + sizeof( long ) + Product.AddressLength;
-
-        } // SizeOfProductData
-
         public static int EtcDataMaxNumOfBytes => m_etcDataMaxNumOfBytes;
         public static byte FirstPageOfUserData => m_firstPageOfUserData;
         public static byte BytesPerPage => m_bytesPerPage;
         public static bool DryRun => m_dryRun;
 
-        public int ErrorSupplierAddressNull => m_errorSupplierAddressNull;
-        public int ErrorInvalidAddressLength => m_errorInvalidAddressLength;
         public int ErrorTagUserMemoryTooSmall => m_errorTagUserMemoryTooSmall;
         public int ErrorExceptionWhileWritingData => m_errorExceptionWhileWritingData;
         #endregion
@@ -321,17 +211,13 @@ namespace Relianz.DeviceServer.Etc
         private SmartCard m_card;
         private AccessHandler m_handler;
 
-        private const int m_etcDataMaxNumOfBytes = 144;
         private const byte m_firstPageOfUserData = 4;
         private const byte m_bytesPerPage = 4;
-
-        private const bool m_useBitConverter = true;
         private const bool m_dryRun = false;
 
-        private const int m_errorSupplierAddressNull = -1;
-        private const int m_errorInvalidAddressLength = -2;
-        private const int m_errorTagUserMemoryTooSmall = -3;
-        private const int m_errorExceptionWhileWritingData = -4;
+        private const int  m_etcDataMaxNumOfBytes = 144;
+        private const int  m_errorTagUserMemoryTooSmall = -3;
+        private const int  m_errorExceptionWhileWritingData = -4;
 
         #endregion
 

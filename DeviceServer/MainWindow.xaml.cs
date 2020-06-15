@@ -75,18 +75,18 @@ namespace Relianz.DeviceServer
 
         private void Read_Identity( object sender, RoutedEventArgs e )
         {
-            Task<Product> t = Task.Run( () => NfcTag.ReadProductData() );
+            Task<Thing> t = Task.Run( () => NfcTag.ReadThingData() );
 
             int? tCurrentId = Task.CurrentId;
             int tId = (tCurrentId == null) ? -1 : (int)tCurrentId;
             DeviceServerApp.Logger.Information( $"In task {tId} - Waiting for task {t.Id} to complete" );
             t.Wait();
 
-            Product p = t.Result;
-            if( p != null )
+            Thing thing = t.Result;
+            if( thing != null )
             {
                 DeviceServerApp.Logger.Information( "Success" );
-                DeviceServerApp.AllPagesViewModel.NfcTagData = p.ProductID.ToString();
+                DeviceServerApp.AllPagesViewModel.NfcTagData = thing.ToString();
             }
             else
                 DeviceServerApp.Logger.Error( $"Reading Identity failed" );
@@ -95,13 +95,9 @@ namespace Relianz.DeviceServer
 
         private void Write_Identity( object sender, RoutedEventArgs e )
         {
-            int productType = 1;
-            long productID =  8083602783975920776;
-            byte[] supplierAddr = Helpers.StringToByteArray( "c218b5b7bc390cbb16dcd591f0dceeb24348ee72fcbdb6e6ed060ccd6eb4fef552e16021040b33a6" );
-
-            Product p = new Product( productType, productID, supplierAddr );
-
-            Task<int> t = Task.Run( () => NfcTag.WriteProductData( p ) );
+            Thing thing = new Thing( Thing.ThingType.ExhaustSystem );
+           
+            Task<int> t = Task.Run( () => NfcTag.WriteThingData( thing ) );
 
             int? tCurrentId = Task.CurrentId;
             int tId = (tCurrentId == null) ? -1 : (int)tCurrentId;
@@ -112,7 +108,7 @@ namespace Relianz.DeviceServer
             if( err == 0 )
             {
                 DeviceServerApp.Logger.Information( "Success" );
-                DeviceServerApp.AllPagesViewModel.NfcTagData = p.ProductID.ToString();
+                DeviceServerApp.AllPagesViewModel.NfcTagData = thing.ToString();
             }
             else
                 DeviceServerApp.Logger.Error( $"Writing Identity failed {err}" );
