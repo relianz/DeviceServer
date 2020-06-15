@@ -49,7 +49,7 @@ namespace Pcsc.Common
         /// <summary>
         /// Smard card connection passed in the constructor
         /// </summary>
-        private SmartCardConnection connectionObject  { set; get; }
+        private SmartCardConnection connectionObject { set; get; }
         /// <summary>
         /// class constructor.
         /// </summary>
@@ -59,7 +59,7 @@ namespace Pcsc.Common
         /// <param name="connection">
         /// connection object to the smard card
         /// </param>
-        public IccDetection(SmartCard card, SmartCardConnection connection) 
+        public IccDetection( SmartCard card, SmartCardConnection connection )
         {
             smartCard = card;
             connectionObject = connection;
@@ -79,18 +79,18 @@ namespace Pcsc.Common
                 var atrBuffer = await smartCard.GetAnswerToResetAsync();
                 Atr = atrBuffer.ToArray();
 
-                Debug.WriteLine("Status: " + (await smartCard.GetStatusAsync()) + "ATR [" + atrBuffer.Length.ToString() + "] = " + BitConverter.ToString(Atr));
+                Debug.WriteLine( "Status: " + (await smartCard.GetStatusAsync()) + "ATR [" + atrBuffer.Length.ToString() + "] = " + BitConverter.ToString( Atr ) );
 
-                AtrInformation = AtrParser.Parse(Atr);
+                AtrInformation = AtrParser.Parse( Atr );
 
-                if (AtrInformation != null && AtrInformation.HistoricalBytes.Length > 0)
+                if( AtrInformation != null && AtrInformation.HistoricalBytes.Length > 0 )
                 {
                     DetectCard();
                 }
             }
-            catch (Exception e)
+            catch( Exception e )
             {
-                Debug.WriteLine(e.Message + e.StackTrace);
+                Debug.WriteLine( e.Message + e.StackTrace );
             }
 
         } // DetectCardTypeAsync
@@ -101,32 +101,32 @@ namespace Pcsc.Common
         /// </summary>
         private void DetectCard()
         {
-            if (AtrInformation.HistoricalBytes.Length > 1)
+            if( AtrInformation.HistoricalBytes.Length > 1 )
             {
                 byte categoryIndicator;
 
-                using (DataReader reader = DataReader.FromBuffer(AtrInformation.HistoricalBytes))
+                using( DataReader reader = DataReader.FromBuffer( AtrInformation.HistoricalBytes ) )
                 {
                     categoryIndicator = reader.ReadByte();
 
-                    if (categoryIndicator == (byte)CategoryIndicator.StatusInfoPresentInTlv)
+                    if( categoryIndicator == (byte)CategoryIndicator.StatusInfoPresentInTlv )
                     {
-                        while (reader.UnconsumedBufferLength > 0)
+                        while( reader.UnconsumedBufferLength > 0 )
                         {
                             const byte appIdPresenceIndTag = 0x4F;
                             const byte appIdPresenceIndTagLen = 0x0C;
 
                             var tagValue = reader.ReadByte();
                             var tagLength = reader.ReadByte();
-                            
-                            if (tagValue == appIdPresenceIndTag && tagLength == appIdPresenceIndTagLen)
+
+                            if( tagValue == appIdPresenceIndTag && tagLength == appIdPresenceIndTagLen )
                             {
                                 byte[] pcscRid = { 0xA0, 0x00, 0x00, 0x03, 0x06 };
-                                byte[] pcscRidRead = new byte[pcscRid.Length];
+                                byte[] pcscRidRead = new byte[ pcscRid.Length ];
 
-                                reader.ReadBytes(pcscRidRead);
+                                reader.ReadBytes( pcscRidRead );
 
-                                if (pcscRid.SequenceEqual(pcscRidRead))
+                                if( pcscRid.SequenceEqual( pcscRidRead ) )
                                 {
                                     byte storageStandard = reader.ReadByte();
                                     ushort cardName = reader.ReadUInt16();
@@ -135,11 +135,11 @@ namespace Pcsc.Common
                                     PcscDeviceClass = DeviceClass.StorageClass;
                                 }
 
-                                reader.ReadBuffer(4); // RFU bytes
+                                reader.ReadBuffer( 4 ); // RFU bytes
                             }
                             else
                             {
-                                reader.ReadBuffer(tagLength);
+                                reader.ReadBuffer( tagLength );
                             }
                         }
                     }
@@ -149,8 +149,8 @@ namespace Pcsc.Common
             {
                 // Compare with Mifare DesFire card ATR
                 byte[] desfireAtr = { 0x3B, 0x81, 0x80, 0x01, 0x80, 0x80 };
-                
-                if (Atr.SequenceEqual(desfireAtr))
+
+                if( Atr.SequenceEqual( desfireAtr ) )
                 {
                     PcscDeviceClass = DeviceClass.MifareDesfire;
                 }

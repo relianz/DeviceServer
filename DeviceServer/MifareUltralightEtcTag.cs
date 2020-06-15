@@ -31,9 +31,9 @@ namespace Relianz.DeviceServer.Etc
     {
         #region Public members
 
-        public MifareUltralightEtcTag( SmartCardConnection scc )
+        public MifareUltralightEtcTag( SmartCard card )
         {
-            m_handler = new AccessHandler( scc );
+            m_card = card;
 
         } // ctor
 
@@ -43,6 +43,8 @@ namespace Relianz.DeviceServer.Etc
             byte[] supplierAddress = p.SupplierAddr;
             int productType = p.ProductType;
             long productID = p.ProductID;
+
+            await CreateHandler();
 
             // Assert arguments:
             if( supplierAddress != null )
@@ -198,6 +200,8 @@ namespace Relianz.DeviceServer.Etc
             bool DryRun = false;
             if( !DryRun )
             {
+                await CreateHandler();
+
                 try
                 {
                     numOfBytes = readBuffer.Length;
@@ -286,8 +290,6 @@ namespace Relianz.DeviceServer.Etc
         #endregion
 
         #region Getter/setter
-        public AccessHandler Tag { get => m_handler; set => m_handler = value; }
-
         public int SizeOfProductData
         {
             get => sizeof( int ) + sizeof( long ) + Product.AddressLength;
@@ -308,6 +310,15 @@ namespace Relianz.DeviceServer.Etc
         #endregion
 
         #region Private members
+
+        private async Task CreateHandler()
+        {
+            SmartCardConnection connection = await m_card.ConnectAsync();
+            m_handler = new AccessHandler( connection );
+
+        } // CreateHandler
+
+        private SmartCard m_card;
         private AccessHandler m_handler;
 
         private const int m_etcDataMaxNumOfBytes = 144;

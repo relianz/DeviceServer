@@ -186,53 +186,127 @@ namespace Relianz.DeviceServer
         {
             try
             {
-                Product p;
-
+                // Connect to the tag:
                 using( SmartCardConnection connection = await card.ConnectAsync() )
                 {
-                    // Try to identify what type of tag it is:
+                    // Try to identify what type of card it was
                     IccDetection cardIdentification = new IccDetection( card, connection );
                     await cardIdentification.DetectCardTypeAsync();
 
-                    String tagName = cardIdentification.PcscCardName.ToString();
-                    String tagAtr = BitConverter.ToString( cardIdentification.Atr );
+                    string tagClass = cardIdentification.PcscDeviceClass.ToString();
+                    string tagName = cardIdentification.PcscCardName.ToString();
+                    string tagAtr = BitConverter.ToString( cardIdentification.Atr );
 
-                    DeviceServerApp.Logger.Information( $"Handling tag {tagName}" );
+                    DeviceServerApp.Logger.Information( $"Connected to tag - PC/SC device class {tagClass}, tag name {tagName}" );
+                    DeviceServerApp.Logger.Information( $"ATR {tagAtr}" );
                     DeviceServerApp.AllPagesViewModel.NfcTagAtr = tagAtr;
 
-                    // Assert validity of tag:
-                    bool validTag = (cardIdentification.PcscDeviceClass == DeviceClass.StorageClass)
-                                    && (cardIdentification.PcscCardName == CardName.MifareUltralight);
-                    if( !validTag )
+                    if( (cardIdentification.PcscDeviceClass == Pcsc.Common.DeviceClass.StorageClass) &&
+                        (cardIdentification.PcscCardName == Pcsc.CardName.MifareUltralightC
+                        || cardIdentification.PcscCardName == Pcsc.CardName.MifareUltralight
+                        || cardIdentification.PcscCardName == Pcsc.CardName.MifareUltralightEV1) )
                     {
-                        if( tagName.Equals( "Unknown" ) )
+                        // Handle MIFARE Ultralight:
+                        NfcTag = new MifareUltralightEtcTag( card );
+                        MifareUltralight.AccessHandler mifareULAccess = new MifareUltralight.AccessHandler( connection );
+
+                        // Each read should get us 16 bytes/4 blocks, so doing
+                        // 4 reads will get us all 64 bytes/16 blocks on the card:
+                        for( byte i = 0; i < 4; i++ )
                         {
-                            ;
+                            byte[] response = await mifareULAccess.ReadAsync( (byte)(4 * i) );
+                            DeviceServerApp.Logger.Information( "Block " + (4 * i).ToString() + " to Block " + (4 * i + 3).ToString() + " " + BitConverter.ToString( response ) );
+                        }
+
+                        byte[] responseUid = await mifareULAccess.GetUidAsync();
+                        DeviceServerApp.Logger.Information( "UID = " + BitConverter.ToString( responseUid ) );
+                    }
+                    else if( cardIdentification.PcscDeviceClass == Pcsc.Common.DeviceClass.MifareDesfire )
+                    {
+                        // Handle MIFARE DESfire
+                        Desfire.AccessHandler desfireAccess = new Desfire.AccessHandler( connection );
+                        Desfire.CardDetails desfire = await desfireAccess.ReadCardDetailsAsync();
+
+                        DeviceServerApp.Logger.Information( "DesFire Card Details:  " + Environment.NewLine + desfire.ToString() );
+                    }
+                    else if( cardIdentification.PcscDeviceClass == Pcsc.Common.DeviceClass.StorageClass
+                        && cardIdentification.PcscCardName == Pcsc.CardName.FeliCa )
+                    {
+                        // Handle Felica
+                        DeviceServerApp.Logger.Information( "Felica card detected" );
+
+                        var felicaAccess = new Felica.AccessHandler( connection );
+                        var uid = await felicaAccess.GetUidAsync();
+
+                        DeviceServerApp.Logger.Information( "UID:  " + BitConverter.ToString( uid ) );
+                    }
+                    else if( cardIdentification.PcscDeviceClass == Pcsc.Common.DeviceClass.StorageClass
+                        && (cardIdentification.PcscCardName == Pcsc.CardName.MifareStandard1K || cardIdentification.PcscCardName == Pcsc.CardName.MifareStandard4K) )
+                    {
+                        // Handle MIFARE Standard/Classic
+                        DeviceServerApp.Logger.Information( "MIFARE Standard/Classic card detected" );
+
+                        var mfStdAccess = new MifareStandard.AccessHandler( connection );
+                        var uid = await mfStdAccess.GetUidAsync();
+                        DeviceServerApp.Logger.Information( "UID:  " + BitConverter.ToString( uid ) );
+
+                        ushort maxAddress = 0;
+                        switch( cardIdentification.PcscCardName )
+                        {
+                            case Pcsc.CardName.MifareStandard1K:
+                                maxAddress = 0x3f;
+                                break;
+                            case Pcsc.CardName.MifareStandard4K:
+                                maxAddress = 0xff;
+                                break;
+                        }
+                        await mfStdAccess.LoadKeyAsync( MifareStandard.DefaultKeys.FactoryDefault );
+
+                        for( ushort address = 0; address <= maxAddress; address++ )
+                        {
+                            var response = await mfStdAccess.ReadAsync( address, Pcsc.GeneralAuthenticate.GeneralAuthenticateKeyType.MifareKeyA );
+                            DeviceServerApp.Logger.Information( "Block " + address.ToString() + " " + BitConverter.ToString( response ) );
+                        }
+                    }
+                    else if( cardIdentification.PcscDeviceClass == Pcsc.Common.DeviceClass.StorageClass
+                        && (cardIdentification.PcscCardName == Pcsc.CardName.ICODE1 ||
+                            cardIdentification.PcscCardName == Pcsc.CardName.ICODESLI ||
+                            cardIdentification.PcscCardName == Pcsc.CardName.iCodeSL2) )
+                    {
+                        // Handle ISO15693
+                        DeviceServerApp.Logger.Information( "ISO15693 card detected" );
+
+                        var iso15693Access = new Iso15693.AccessHandler( connection );
+                        var uid = await iso15693Access.GetUidAsync();
+                        DeviceServerApp.Logger.Information( "UID:  " + BitConverter.ToString( uid ) );
+                    }
+                    else
+                    {
+                        // Unknown card type
+                        // Note that when using the XDE emulator the card's ATR and type is not passed through, so we'll
+                        // end up here even for known card types if using the XDE emulator
+
+                        // Some cards might still let us query their UID with the PC/SC command, so let's try:
+                        var apduRes = await connection.TransceiveAsync( new Pcsc.GetUid() );
+                        if( !apduRes.Succeeded )
+                        {
+                            DeviceServerApp.Logger.Error( "Failure getting UID of card, " + apduRes.ToString() );
                         }
                         else
                         {
-                            ;
+                            DeviceServerApp.Logger.Information( "UID:  " + BitConverter.ToString( apduRes.ResponseData ) );
                         }
-
-                        ;
-
-                        return;
-
-                    } // invalid tag
-
-                    // Create instance that handles tag data:
-                    NfcTag = new MifareUltralightEtcTag( connection );
-
-                } // using
+                    }
+                }
             }
-            catch( Exception x )
+            catch( Exception ex )
             {
-                string msg = x.Message;
-                ;
+                DeviceServerApp.Logger.Fatal( "Exception handling card: " + ex.ToString() );
             }
 
         } // HandleTag
 
+        
         private MifareUltralightEtcTag m_NfcTag;
         #endregion
 
