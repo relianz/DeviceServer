@@ -41,7 +41,7 @@ namespace Relianz.DeviceServer.Etc
 
         public async Task<int> WriteThingData( Thing t )
         {
-            byte[]  data = t.ToByteArray();
+            byte[]  data = t.ToTagBuffer();
 
             int dataSize = data.Length;
             if( dataSize > EtcDataMaxNumOfBytes )
@@ -179,7 +179,7 @@ namespace Relianz.DeviceServer.Etc
 
             } // !DryRun
 
-            Thing t = Thing.FromByteArray( readBuffer );
+            Thing t = Thing.FromTagBuffer( readBuffer );
 
             return t;
 

@@ -115,12 +115,62 @@ namespace Relianz.DeviceServer.Etc
 
         } // ToByteArray
 
+        public byte[] ToTagBuffer()
+        {
+            byte[] data = ToByteArray();
+            int dataLength = data.Length;
+
+            if( dataLength > TagBufferSize )
+            {
+                return null;
+            }
+
+            byte[] tagBuffer = new byte[ TagBufferSize ];
+            data.CopyTo( tagBuffer, 0 );
+
+            // padding:
+            for( int i = dataLength; i < TagBufferSize; i++ )
+            {
+                tagBuffer[ i ] = Convert.ToByte( m_paddingChar );
+            }
+
+            return tagBuffer;
+
+        } // ToTagBuffer
+
+        public static Thing FromTagBuffer( byte[] buffer )
+        {
+            // find index of first padding character:
+            bool found = false;
+            int indexFirstPad;
+
+            for( indexFirstPad = 0; indexFirstPad < buffer.Length; indexFirstPad++ )
+            {
+                if( buffer[ indexFirstPad ] == Convert.ToByte( m_paddingChar ) )
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if( !found )
+            { 
+                return null;
+            }
+
+            byte[] csvData = new byte[ indexFirstPad ];
+            for( int i = 0; i < indexFirstPad; i++ )
+            {
+                csvData[ i ] = buffer[ i ];
+            }
+
+            return FromByteArray( csvData );
+
+        } // FromTagBuffer
+
         public static int SizeOf()
         {
-            Thing dummy = new Thing( ThingType.Digger );
-            byte[] data = dummy.ToByteArray();
-
-            return data.Length;
+            return TagBufferSize;
 
         } // SizeOf
 
@@ -140,6 +190,12 @@ namespace Relianz.DeviceServer.Etc
 
         // character for CSV token separation:
         private static char m_stringSeparatorChar = ',';
+
+        // character for padding fixed size string representation:
+        private static char m_paddingChar = '*';
+
+        // buffer for tag storage:
+        private const int TagBufferSize = 128;
         #endregion
 
     } // class Thing
