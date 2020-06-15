@@ -110,8 +110,16 @@ namespace Relianz.DeviceServer
             // Show readers found on UI:
             AllPagesViewModel.NfcReader = readers;
 
-            // Select first reader for operations:
-            CardReader = m_cardReaders[ 0 ];
+            // Select first compatible reader for operations:
+            if( m_cardReaders[ 0 ].Name.Contains( "Alcor" ) ) 
+            {
+                if( numOfReaders > 1 )
+                    CardReader = m_cardReaders[ 1 ];
+                else
+                    Logger.Error( "No compatible reader found!" );
+            }
+            else
+                CardReader = m_cardReaders[ 0 ];
 
         } // GetSmartCardReaders
         #endregion
