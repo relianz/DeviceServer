@@ -31,4 +31,6 @@ When a [UWP](https://docs.microsoft.com/en-us/windows/uwp/) app provides a netwo
 * [Microsoft Visual Studio Community 2019](https://visualstudio.microsoft.com/vs/community/)
 
 ### How to build?
-Clone the repository, open [DeviceServer.sln](./DeviceServer.sln) in VS16 and build the solution.  
+Clone the repository, open [DeviceServer.sln](./DeviceServer.sln) in VS16 and build the solution.
+
+![DeviceServer UI](./DeviceServer/media/200615%20DeviceServer%20UI.jpg)
