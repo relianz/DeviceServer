@@ -26,6 +26,7 @@ using System.Threading.Tasks;           // Task
 using System.Collections.Generic;       // IDictionary
 
 using Newtonsoft.Json;                  // JsonConvert
+using Relianz.DeviceServer.Etc;
 
 namespace Relianz.DeviceServer
 {
@@ -46,7 +47,7 @@ namespace Relianz.DeviceServer
             listener = new HttpListener();
             listener.Prefixes.Add( ServerUri );
 
-            myServerSettings = new ServerSettings( rootDir );
+            myServerSettings = new ServerSettings( ipAddr, port, rootDir );
 
         } // ctor
 
@@ -171,13 +172,236 @@ namespace Relianz.DeviceServer
 
             using( var response = context.Response )
             {
+                bool handled = false;
+
                 try
                 {
-                    var handled = false;
-
                     switch( context.Request.Url.AbsolutePath )
                     {
-                        // This is where we do different things depending on the URL                        
+                        // This is where we do different things depending on the URL:
+
+                        case "/reader":
+                        {
+                            switch( context.Request.HttpMethod )
+                            {
+                                case "GET":
+                                {
+                                    Device reader;
+
+                                    if( DeviceServerApp.CardReader == null )
+                                    {
+                                        reader = new Device( Device.DeviceType.NoDevice );
+                                    }
+                                    else
+                                    {
+                                        reader = new Device( Device.DeviceType.SmartCardReader, DeviceServerApp.CardReader.Name );
+                                    }
+
+                                    response.ContentType = "application/json";
+
+                                    // Serialize tag information to JSON string:
+                                    string responseBody = reader.ToJsonString();
+
+                                    // Write JSON to the response stream:
+                                    var buffer = Encoding.UTF8.GetBytes( responseBody );
+
+                                    response.StatusCode = (int)HttpStatusCode.OK;
+                                    response.ContentLength64 = buffer.Length;
+                                    response.OutputStream.Write( buffer, 0, buffer.Length );
+
+                                    settings.BytesServed += buffer.Length;
+                                    handled = true;
+
+                                    break;
+
+                                } // GET /reader
+
+                                default:
+                                {
+                                    DeviceServerApp.Logger.Error( $"Invalid HTTP method {context.Request.HttpMethod} for /reader" );
+                                    response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
+                                    break;
+                                }
+
+                            } // switch method
+
+                            break;
+
+                        } // reader
+
+                        case "/nfctag":
+                        {
+                            switch( context.Request.HttpMethod )
+                            {
+                                case "GET":
+                                {
+                                    Device nfctag;
+
+                                    if( !DeviceServerApp.AllPagesViewModel.TagOnReader )
+                                    {
+                                        nfctag = new Device( Device.DeviceType.NoDevice );
+                                    }
+                                    else
+                                    {
+                                        nfctag = new Device( Device.DeviceType.NfcTag, DeviceServerApp.AllPagesViewModel.NfcTagAtr );
+                                    }
+
+                                    response.ContentType = "application/json";
+
+                                    // Serialize tag information to JSON string:
+                                    string responseBody = nfctag.ToJsonString();
+
+                                    // Write JSON to the response stream:
+                                    var buffer = Encoding.UTF8.GetBytes( responseBody );
+
+                                    response.StatusCode = (int)HttpStatusCode.OK;
+                                    response.ContentLength64 = buffer.Length;
+                                    response.OutputStream.Write( buffer, 0, buffer.Length );
+
+                                    settings.BytesServed += buffer.Length;
+                                    handled = true;
+
+                                    break;
+
+                                } // GET /nfctag
+
+                                default:
+                                {
+                                    DeviceServerApp.Logger.Error( $"Invalid HTTP method {context.Request.HttpMethod} for /nfctag" );
+                                    response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
+                                    break;
+                                }
+
+                            } // switch method
+
+                            break;
+
+                        } // nfctag
+
+                        case "/readthing":
+                        {
+                            if( !DeviceServerApp.AllPagesViewModel.TagOnReader )
+                            {
+                                DeviceServerApp.Logger.Error( $"Must have NFC tag for /readthing" );
+                                response.StatusCode = (int)HttpStatusCode.PreconditionFailed;
+                                break;
+
+                            } // missing tag
+
+                            switch( context.Request.HttpMethod )
+                            {
+                                case "GET":
+                                {
+                                    Task<Thing> t = Task.Run( () => MainWindow.NfcTag.ReadThingData() );
+
+                                    int? tCurrentId = Task.CurrentId;
+                                    int  tId = (tCurrentId == null) ? -1 : (int)tCurrentId;
+                                    DeviceServerApp.Logger.Information( $"In task {tId} - Waiting for task {t.Id} to complete" );
+                                    t.Wait();
+
+                                    Thing thing = t.Result;
+                                    if( thing != null )
+                                    {
+                                        DeviceServerApp.Logger.Information( "Success" );
+                                        DeviceServerApp.AllPagesViewModel.NfcTagData = thing.ToString();
+                                    }
+                                    else
+                                    {
+                                        DeviceServerApp.Logger.Error( $"Reading thing data from tag failed" );
+                                        break;
+                                    }
+
+                                    response.ContentType = "application/json";
+
+                                    // Send thing data back to HTTP client:
+                                    string responseBody = thing.ToJsonString();
+                                    var buffer = Encoding.UTF8.GetBytes( responseBody );
+
+                                    response.StatusCode = (int)HttpStatusCode.OK;
+                                    response.ContentLength64 = buffer.Length;
+                                    response.OutputStream.Write( buffer, 0, buffer.Length );
+
+                                    settings.BytesServed += buffer.Length;
+                                    handled = true;
+
+                                    break;
+
+                                } // GET /readthing
+
+                                default:
+                                {
+                                    DeviceServerApp.Logger.Error( $"Invalid HTTP method {context.Request.HttpMethod} for /readthing" );
+                                    response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
+                                    break;
+                                }
+
+                            } // switch method
+
+                            break;
+
+                        } // readthing
+
+                        case "/writething":
+                        {
+                            if( !DeviceServerApp.AllPagesViewModel.TagOnReader )
+                            {
+                                DeviceServerApp.Logger.Error( $"Must have NFC tag for /writething" );
+                                response.StatusCode = (int)HttpStatusCode.PreconditionFailed;
+                                break;
+                            }
+
+                            switch( context.Request.HttpMethod )
+                            {
+                                case "POST":
+                                {                                    
+                                    // We have a tag, write thing data to it:
+                                    using( var body = context.Request.InputStream )
+                                    using( var reader = new StreamReader( body, context.Request.ContentEncoding ) )
+                                    {
+                                        // Get the JSON formatted thing data:
+                                        string json = reader.ReadToEnd();
+
+                                        Thing thing = Thing.FromJsonString( json );
+
+                                        Task<int> t = Task.Run( () => MainWindow.NfcTag.WriteThingData( thing ) );
+
+                                        int? tCurrentId = Task.CurrentId;
+                                        int tId = (tCurrentId == null) ? -1 : (int)tCurrentId;
+                                        DeviceServerApp.Logger.Information( $"In task {tId} - Waiting for task {t.Id} to complete" );
+                                        t.Wait();
+
+                                        int err = t.Result;
+                                        if( err == 0 )
+                                        {
+                                            DeviceServerApp.Logger.Information( "Success" );
+                                            DeviceServerApp.AllPagesViewModel.NfcTagData = thing.ToString();
+
+                                            response.StatusCode = (int)HttpStatusCode.NoContent;
+                                            handled = true;
+                                        }
+                                        else
+                                        {
+                                            DeviceServerApp.Logger.Error( $"Writing thing data to tag failed {err}" );
+                                            response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                                        }
+
+                                    } // using using 
+
+                                    break;
+                                }
+                                default:
+                                {
+                                    DeviceServerApp.Logger.Error( $"Invalid HTTP method {context.Request.HttpMethod} for /writething" );
+                                    response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
+                                    break;
+                                }
+
+                            } // switch HTTP method
+
+                            break;
+
+                        } // writething
+
                         case "/settings":
                         {
                             switch( context.Request.HttpMethod )
@@ -190,39 +414,23 @@ namespace Relianz.DeviceServer
                                     // This is what we want to send back:
                                     var responseBody = JsonConvert.SerializeObject( settings );
 
-                                    // Write it to the response stream
+                                    // Write it to the response stream:
                                     var buffer = Encoding.UTF8.GetBytes( responseBody );
+
+                                    response.StatusCode = (int)HttpStatusCode.OK;
                                     response.ContentLength64 = buffer.Length;
                                     response.OutputStream.Write( buffer, 0, buffer.Length );
+
                                     handled = true;
 
                                     break;
 
-                                } // GET settings
-
-                                case "PUT":
-                                {
-                                    // Update application settings:
-                                    using( var body = context.Request.InputStream )
-                                    using( var reader = new StreamReader( body, context.Request.ContentEncoding ) )
-                                    {
-                                        // Get the data that was sent to us
-                                        var json = reader.ReadToEnd();
-
-                                        // Use it to update our settings
-                                        UpdateSettings( JsonConvert.DeserializeObject<ServerSettings>( json ) );
-
-                                        // Return 204 No Content to say we did it successfully
-                                        response.StatusCode = 204;
-                                        handled = true;
-                                    }
-                                    break;
-
-                                } // PUT settings
+                                } // GET /settings
 
                                 default:
                                 {
                                     DeviceServerApp.Logger.Error( $"Invalid HTTP method {context.Request.HttpMethod} for /settings" );
+                                    response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
                                     break;
                                 }
 
@@ -238,6 +446,7 @@ namespace Relianz.DeviceServer
                             if( httpMethod.CompareTo( "GET" ) != 0 )
                             {
                                 DeviceServerApp.Logger.Error( $"Invalid HTTP method {context.Request.HttpMethod} for /index.html" );
+                                response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
                                 break;
                             }
 
@@ -245,11 +454,13 @@ namespace Relianz.DeviceServer
                             handled = true;
 
                             break;
-                        }
+
+                        } // index.html
 
                         default:
                         {
                             DeviceServerApp.Logger.Error( $"Cannot handle absolute path <{context.Request.Url.AbsolutePath }>" );
+                            response.StatusCode = (int)HttpStatusCode.NotFound;
                             break;
                         }
 
@@ -257,31 +468,34 @@ namespace Relianz.DeviceServer
 
                     if( !handled )
                     {
-                        response.StatusCode = 404;
+                        response.StatusCode = (int)HttpStatusCode.BadRequest;
                     }
                 }
                 catch( Exception e )
                 {
-                    // Return the exception details the client - you may or may not want to do this.
-                    response.StatusCode = 500;
+                    DeviceServerApp.Logger.Error( e.Message );
+
+                    // Return the exception details the client:
+                    response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     response.ContentType = "application/json";
 
                     var buffer = Encoding.UTF8.GetBytes( JsonConvert.SerializeObject( e ) );
                     response.ContentLength64 = buffer.Length;
                     response.OutputStream.Write( buffer, 0, buffer.Length );
 
-                    // TODO: Log the exception
+                    handled = true;
+                    settings.BytesServed += buffer.Length;
 
                 } // catch
 
-            } // using response
+                if( !handled )
+                {
+                    response.OutputStream.Flush();
+                }
+
+            } // using response 
 
         } // ProcessRequest
-
-        private static void UpdateSettings( ServerSettings newSettings )
-        {
-            // TODO: Update application settings
-        }
 
         private void DeliverStaticResource( HttpListenerContext context, string fileName )
         {
@@ -401,17 +615,27 @@ namespace Relianz.DeviceServer
 
     public class ServerSettings
     {
-        public ServerSettings( string rootDir )
+        public ServerSettings( string ipAddr, int port, string rootDir )
         {
-            this.RootDir = rootDir;
+            IpAddr = ipAddr;
+            Port = port;
+
+            RootDir = rootDir;
+            LogFileDir = DeviceServerApp.AllPagesViewModel.LogFileLocation;
 
         } // ctor
 
-        public string RootDir { get => rootDir; set => rootDir = value; }
-        public string BytesServed { get => bytesServed; set => bytesServed = value; }
-
-        private string rootDir;
-        private string bytesServed;
+        public string IpAddr { get => m_ipAddr; private set => m_ipAddr = value; }
+        public int Port { get => m_port; private set => m_port = value; }
+        public string RootDir { get => m_rootDir; private set => m_rootDir = value; }
+        public string LogFileDir { get => m_logFileDir; private set => m_logFileDir = value; }
+        public string BytesServed { get => m_bytesServed; set => m_bytesServed = value; }
+        
+        private string m_ipAddr;
+        private int m_port;
+        private string m_rootDir;
+        private string m_logFileDir;
+        private string m_bytesServed;
 
     } // ServerSettings
 

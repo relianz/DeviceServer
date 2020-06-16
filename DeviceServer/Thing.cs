@@ -39,18 +39,18 @@ namespace Relianz.DeviceServer.Etc
         public Thing( ThingType type, Guid Id )
         {
             Type = type;
-            m_Id = Id;
+            this.Id = Id;
 
-            m_createdWhen = DateTime.Now;
+            CreatedWhen = DateTime.Now;
         
         } // ctor
 
         public Thing( ThingType type )
         {
             Type = type;
-            m_Id = Guid.NewGuid();
+            Id = Guid.NewGuid();
 
-            m_createdWhen = DateTime.Now;
+            CreatedWhen = DateTime.Now;
 
         } // ctor
 
@@ -62,8 +62,9 @@ namespace Relianz.DeviceServer.Etc
             try
             {
                 Type = (ThingType)Enum.Parse( typeof( ThingType ), attributes[ 0 ] );
-                m_Id = Guid.Parse( attributes[ 1 ] );
-                m_createdWhen = DateTime.Parse( attributes[ 2 ] );
+                TypeAsString = Type.ToString();
+                Id = Guid.Parse( attributes[ 1 ] );
+                CreatedWhen = DateTime.Parse( attributes[ 2 ] );
             }
             catch( Exception ex )
             {
@@ -100,7 +101,8 @@ namespace Relianz.DeviceServer.Etc
 
         public override string ToString()
         {
-            string s = $"{Type.ToString()}{m_stringSeparatorChar}{m_Id.ToString()}{m_stringSeparatorChar}{m_createdWhen.ToString()}";
+            // do not store TypeAsString:
+            string s = $"{Type.ToString()}{m_stringSeparatorChar}{Id.ToString()}{m_stringSeparatorChar}{CreatedWhen.ToString()}";
 
             return s;
 
@@ -175,12 +177,18 @@ namespace Relianz.DeviceServer.Etc
         } // SizeOf
 
         public ThingType Type { get => m_type; set => m_type = value; }
+        public string TypeAsString { get => m_typeAsString; set => m_typeAsString = value; }
+        public Guid Id { get => m_Id; set => m_Id = value; }
+        public DateTime CreatedWhen { get => m_createdWhen; set => m_createdWhen = value; }
         #endregion
 
         #region private members
 
         // the type of the thing:
         private ThingType m_type;
+
+        // not stored on tag:
+        private string m_typeAsString;
 
         // the globally unique ID of the thing:
         private Guid m_Id;

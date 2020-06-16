@@ -50,7 +50,7 @@ namespace Relianz.DeviceServer
 
         } // ctor
 
-        public MifareUltralightEtcTag NfcTag { get => m_NfcTag; private set => m_NfcTag = value; }
+        public static MifareUltralightEtcTag NfcTag { get => m_NfcTag; private set => m_NfcTag = value; }
         #endregion
 
         #region private members
@@ -303,7 +303,7 @@ namespace Relianz.DeviceServer
         } // HandleTag
 
         
-        private MifareUltralightEtcTag m_NfcTag;
+        private static MifareUltralightEtcTag m_NfcTag;
         #endregion
 
     } // class MainWindow
