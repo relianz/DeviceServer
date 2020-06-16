@@ -8,7 +8,7 @@ What already runs _(Tuesday, 20/06/16 - 21:51 CEST)_:
 * Identification of Smartcard readers
 * Identification of NFC tags
 * Writing Thing data to / Reading Thing data from [MIFARE Ultralight](https://www.nxp.com/docs/en/data-sheet/MF0ICU1.pdf) NFC tag 
-* Services of the HTTP Server:<br/>GET /reader, GET /nfctag, GET /readthing
+* Services of the HTTP Server:<br/>`GET /reader`, `GET /nfctag`, and `GET /readthing`
 
 ![DeviceServer /readthing](./DeviceServer/media/200616%20DeviceServer,%20readthing.jpg)
 
