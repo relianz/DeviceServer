@@ -4,11 +4,13 @@ A WPF app with an integrated HTTP server that enables the web browser to access 
 ## Status
 The Software is **WIP**, development started on June 11, 2020. 
 
-What already runs _(20/06/15 - 21:15 CEST)_:
+What already runs _(Tuesday, 20/06/16 - 21:51 CEST)_:
 * Identification of Smartcard readers
 * Identification of NFC tags
 * Writing Thing data to / Reading Thing data from [MIFARE Ultralight](https://www.nxp.com/docs/en/data-sheet/MF0ICU1.pdf) NFC tag 
-* Running the HTTP Server
+* Services of the HTTP Server:<br/>GET /reader, GET /nfctag, GET /readthing
+
+![DeviceServer /readthing](./DeviceServer/media/200616%20DeviceServer,%20readthing.jpg)
 
 Because development takes place in my free time (and I love my family), progress is slow.
 
