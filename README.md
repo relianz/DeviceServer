@@ -27,7 +27,7 @@ You do not have to obtain any packages manually, the project file [DeviceServer.
 When a [UWP](https://docs.microsoft.com/en-us/windows/uwp/) app provides a network service, only _its own code_ or an app _on another machine_ can access the service. Since the app and the web browser should run on the same machine, UWP is not an alternative.
 
 ## Platform & Tools
-* Microsoft Windows 10 
+* [Microsoft Windows 10](https://docs.microsoft.com/en-us/windows/release-information/) - the App has been tested with [OS Build 17763.1217](https://support.microsoft.com/en-us/help/4551853/windows-10-update-kb4551853), any newer version of the operating system should do the job. 
 * [Microsoft Visual Studio Community 2019](https://visualstudio.microsoft.com/vs/community/)
 
 ### How to build?
