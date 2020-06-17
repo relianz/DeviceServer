@@ -127,6 +127,7 @@ namespace Relianz.DeviceServer
             if( DeviceServerApp.CardReader != null )
             {
                 DeviceServerApp.AllPagesViewModel.NfcTagAtr = "(no tag present)";
+                DeviceServerApp.AllPagesViewModel.NfcTagUid = "(no tag present)";
 
                 // Register card event handlers:
                 DeviceServerApp.CardReader.CardAdded += CardAdded;
@@ -168,6 +169,7 @@ namespace Relianz.DeviceServer
                     DeviceServerApp.AllPagesViewModel.TagOnReader = false;
 
                     DeviceServerApp.AllPagesViewModel.NfcTagAtr  = "(no tag present)";
+                    DeviceServerApp.AllPagesViewModel.NfcTagUid  = "(no tag present)";
                     DeviceServerApp.AllPagesViewModel.NfcTagData = "";
                 }
             }
@@ -215,7 +217,10 @@ namespace Relianz.DeviceServer
                         }
 
                         byte[] responseUid = await mifareULAccess.GetUidAsync();
-                        DeviceServerApp.Logger.Information( "UID = " + BitConverter.ToString( responseUid ) );
+
+                        string uidStr = BitConverter.ToString( responseUid );
+                        DeviceServerApp.Logger.Information( "UID = " + uidStr );
+                        DeviceServerApp.AllPagesViewModel.NfcTagUid  = uidStr;
                     }
                     else if( cardIdentification.PcscDeviceClass == Pcsc.Common.DeviceClass.MifareDesfire )
                     {

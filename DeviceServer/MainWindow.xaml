@@ -44,9 +44,13 @@
 
             <WrapPanel Orientation="Horizontal" Width="1050">
                 <Label Content="NFC Tag ATR:" HorizontalAlignment="Right" VerticalAlignment="Top" Height="26"  Width="100" FontWeight="Bold" />
-                <TextBox x:Name="nfcTagAtr"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="552"  
+                <TextBox x:Name="nfcTagAtr"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="400"  
                     TextWrapping="Wrap" IsReadOnly="True" VerticalContentAlignment="Center" Cursor="Cross" BorderThickness="0" 
                     Text="{Binding NfcTagAtr}"/>
+                <Label Content="NFC Tag UID:" HorizontalAlignment="Right" VerticalAlignment="Top" Height="26"  Width="100" FontWeight="Bold" />
+                <TextBox x:Name="nfcTagUid"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="150"  
+                    TextWrapping="Wrap" IsReadOnly="True" VerticalContentAlignment="Center" Cursor="Cross" BorderThickness="0" 
+                    Text="{Binding NfcTagUid}"/>
             </WrapPanel>
 
             <WrapPanel Orientation="Horizontal" Width="1050">

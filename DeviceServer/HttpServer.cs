@@ -243,7 +243,7 @@ namespace Relianz.DeviceServer
                                     }
                                     else
                                     {
-                                        nfctag = new Device( Device.DeviceType.NfcTag, DeviceServerApp.AllPagesViewModel.NfcTagAtr );
+                                        nfctag = new Device( Device.DeviceType.NfcTag, DeviceServerApp.AllPagesViewModel.NfcTagAtr, DeviceServerApp.AllPagesViewModel.NfcTagUid );
                                     }
 
                                     response.ContentType = "application/json";

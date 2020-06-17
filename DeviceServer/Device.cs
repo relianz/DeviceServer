@@ -32,11 +32,12 @@ namespace Relianz.DeviceServer
 
 		} // enum DeviceType
 
-		public Device( DeviceType type, string model = "Unknown model" )
+		public Device( DeviceType type, string model = "Unknown model", string identity = "Unknown identity" )
         {
 			Type = type;
 			TypeAsString = type.ToString();
 			Model = model;
+			Identity = identity;
 
         } // ctor
 
@@ -51,14 +52,14 @@ namespace Relianz.DeviceServer
 		public DeviceType Type { get => m_type; private set => m_type = value; }
 		public string TypeAsString { get => m_typeAsString; private set => m_typeAsString = value; }
 		public string Model { get => m_model; private set => m_model = value; }
-        
-
+        public string Identity { get => m_identity; private set => m_identity = value; }
         #endregion
 
         #region private members
-        private DeviceType  m_type;
+        private DeviceType m_type;
 		private string m_typeAsString;
 		private string m_model;
+		private string m_identity;
         #endregion
 
     } // class Device
