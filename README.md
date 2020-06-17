@@ -44,4 +44,5 @@ The app was tested with the following hardware:
 * [ACR122U](https://www.acs.com.hk/en/products/3/acr122u-usb-nfc-reader/)
 
 ### NFC tags
+* [MIFARE Ultralight](https://www.nxp.com/docs/en/data-sheet/MF0ICU1.pdf)
 * [MIDAS NFC Wet Inlay](https://www.smartrac-group.com/midas-nfc.html)
