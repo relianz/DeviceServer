@@ -36,10 +36,11 @@ namespace Relianz.DeviceServer.Etc
 
         } // enum ThingType
 
-        public Thing( ThingType type, Guid Id )
+        public Thing( ThingType type, Guid id )
         {
             Type = type;
-            this.Id = Id;
+            TypeAsString = Type.ToString();
+            Id = id;
 
             CreatedWhen = DateTime.Now;
         
@@ -48,6 +49,7 @@ namespace Relianz.DeviceServer.Etc
         public Thing( ThingType type )
         {
             Type = type;
+            TypeAsString = Type.ToString();
             Id = Guid.NewGuid();
 
             CreatedWhen = DateTime.Now;
@@ -188,7 +190,7 @@ namespace Relianz.DeviceServer.Etc
         private ThingType m_type;
 
         // not stored on tag:
-        private string m_typeAsString;
+        private string? m_typeAsString;
 
         // the globally unique ID of the thing:
         private Guid m_Id;
