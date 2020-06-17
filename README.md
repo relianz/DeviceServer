@@ -19,6 +19,7 @@ DeviceServer is written in C# [Version 8.0](https://stackoverflow.com/questions/
 * [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 * [HttpListener](https://docs.microsoft.com/en-us/dotnet/api/system.net.httplistener?view=netcore-3.1)
 * [Windows Presentation Foundation](https://docs.microsoft.com/en-us/dotnet/desktop-wpf/overview/?view=vs-2019) 
+* [Task Parallel Library](https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/task-parallel-library-tpl)
 * [Microsoft.Windows.SDK.Contracts](https://docs.microsoft.com/en-us/windows/apps/desktop/modernize/desktop-to-uwp-enhance)
 * [Serilog](https://github.com/serilog/serilog)
 * [Json.NET](https://www.newtonsoft.com/json)
@@ -36,3 +37,11 @@ When a [UWP](https://docs.microsoft.com/en-us/windows/uwp/) app provides a netwo
 Clone the repository, open [DeviceServer.sln](./DeviceServer.sln) in VS16 and build the solution.
 
 ![DeviceServer UI](./DeviceServer/media/200615%20DeviceServer%20UI.jpg)
+
+## Hardware
+The app was tested with the following hardware:
+### Smardcard readers
+* [ACR122U](https://www.acs.com.hk/en/products/3/acr122u-usb-nfc-reader/)
+
+### NFC tags
+* [MIDAS NFC Wet Inlay](https://www.smartrac-group.com/midas-nfc.html)
