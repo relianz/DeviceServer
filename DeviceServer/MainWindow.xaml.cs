@@ -86,7 +86,7 @@ namespace Relianz.DeviceServer
             if( thing != null )
             {
                 DeviceServerApp.Logger.Information( "Success" );
-                DeviceServerApp.AllPagesViewModel.NfcTagData = thing.ToString();
+                DeviceServerApp.AllPagesViewModel.NfcTagData = thing.ToDisplayString();
             }
             else
                 DeviceServerApp.Logger.Error( $"Reading Identity failed" );
@@ -95,6 +95,7 @@ namespace Relianz.DeviceServer
 
         private void Write_Identity( object sender, RoutedEventArgs e )
         {
+            // example thing:
             Thing thing = new Thing( Thing.ThingType.ExhaustSystem );
            
             Task<int> t = Task.Run( () => NfcTag.WriteThingData( thing ) );
@@ -108,7 +109,7 @@ namespace Relianz.DeviceServer
             if( err == 0 )
             {
                 DeviceServerApp.Logger.Information( "Success" );
-                DeviceServerApp.AllPagesViewModel.NfcTagData = thing.ToString();
+                DeviceServerApp.AllPagesViewModel.NfcTagData = thing.ToDisplayString();
             }
             else
                 DeviceServerApp.Logger.Error( $"Writing Identity failed {err}" );
@@ -220,7 +221,7 @@ namespace Relianz.DeviceServer
 
                         string uidStr = BitConverter.ToString( responseUid );
                         DeviceServerApp.Logger.Information( "UID = " + uidStr );
-                        DeviceServerApp.AllPagesViewModel.NfcTagUid  = uidStr;
+                        DeviceServerApp.AllPagesViewModel.NfcTagUid = uidStr;
                     }
                     else if( cardIdentification.PcscDeviceClass == Pcsc.Common.DeviceClass.MifareDesfire )
                     {
@@ -307,7 +308,6 @@ namespace Relianz.DeviceServer
 
         } // HandleTag
 
-        
         private static MifareUltralightEtcTag m_NfcTag;
         #endregion
 

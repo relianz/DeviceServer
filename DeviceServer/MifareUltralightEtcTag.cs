@@ -41,7 +41,12 @@ namespace Relianz.DeviceServer.Etc
 
         public async Task<int> WriteThingData( Thing t )
         {
-            byte[]  data = t.ToTagBuffer();
+            byte[] data = t.ToTagBuffer();
+            if( data == null )
+            {
+                // failed serializing thing data to tag buffer:
+                return ErrorCannotSerializeThingData;
+            }
 
             int dataSize = data.Length;
             if( dataSize > EtcDataMaxNumOfBytes )
@@ -62,11 +67,13 @@ namespace Relianz.DeviceServer.Etc
             bool DryRun = false;
             if( !DryRun )
             {
-                int numOfBytes = data.Length;
+                int numOfBytes = data.Length; // / 4; // <------------ HID!
                 int numOfPages = numOfBytes / BytesPerPage;
                 int numOfCalls = numOfPages / pagesPerWriteAsync;
 
                 byte pageAddress = 0;
+
+                DeviceServerApp.Logger.Information( $"Bytes to write = {numOfBytes}, pages = {numOfPages}, calls = {numOfCalls}" );
 
                 try
                 {
@@ -80,7 +87,7 @@ namespace Relianz.DeviceServer.Etc
 #if DEBUG
                         if( j == (numOfCalls - 1) )
                         {
-                            ;
+                            DeviceServerApp.Logger.Information( $"Last write operation (= {j})");
 
                         } // last write 
 #endif
@@ -185,6 +192,12 @@ namespace Relianz.DeviceServer.Etc
 
         } // IEtcTag.ReadThingData
 
+        public async Task CreateHandler()
+        {
+            SmartCardConnection connection = await m_card.ConnectAsync();
+            m_handler = new AccessHandler( connection );
+
+        } // CreateHandler
         #endregion
 
         #region Getter/setter
@@ -195,19 +208,12 @@ namespace Relianz.DeviceServer.Etc
 
         public int ErrorTagUserMemoryTooSmall => m_errorTagUserMemoryTooSmall;
         public int ErrorExceptionWhileWritingData => m_errorExceptionWhileWritingData;
+        public static int ErrorCannotSerializeThingData => m_errorCannotSerializeThingData;
         #endregion
 
         #endregion
 
         #region Private members
-
-        private async Task CreateHandler()
-        {
-            SmartCardConnection connection = await m_card.ConnectAsync();
-            m_handler = new AccessHandler( connection );
-
-        } // CreateHandler
-
         private SmartCard m_card;
         private AccessHandler m_handler;
 
@@ -215,10 +221,10 @@ namespace Relianz.DeviceServer.Etc
         private const byte m_bytesPerPage = 4;
         private const bool m_dryRun = false;
 
-        private const int  m_etcDataMaxNumOfBytes = 144;
-        private const int  m_errorTagUserMemoryTooSmall = -3;
-        private const int  m_errorExceptionWhileWritingData = -4;
-
+        private const int m_etcDataMaxNumOfBytes = 48; // 144;
+        private const int m_errorTagUserMemoryTooSmall = -3;
+        private const int m_errorExceptionWhileWritingData = -4;
+        private const int m_errorCannotSerializeThingData = -5;
         #endregion
 
     } // class MifareUltralightEtcTag

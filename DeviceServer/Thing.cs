@@ -36,6 +36,15 @@ namespace Relianz.DeviceServer.Etc
 
         } // enum ThingType
 
+        public enum ExternalFormat : byte
+        {
+            Unknown = 0,
+            Standard = 1,
+            Tiny = 2,
+            Display = 3
+
+        } // enum ExternalFormat
+
         public Thing( ThingType type, Guid id )
         {
             Type = type;
@@ -61,12 +70,67 @@ namespace Relianz.DeviceServer.Etc
             m_stringSeparatorChar = separator;
             string[] attributes = csvString.Split( m_stringSeparatorChar );
 
+            ExternalFormat ef = ExternalFormat.Unknown;
+
+            // Read format specifier:
+            switch( attributes[ 0 ] )
+            {
+                case "T":
+                    ef = ExternalFormat.Tiny;       // T,TypeAsNumber,Id
+                    break;
+
+                case "S":
+                    ef = ExternalFormat.Standard;   // S,TypeAsString,Id,CreatedWhen
+                    break;
+
+                case "D":
+                    ef = ExternalFormat.Display;    // D,TypeAsNumber,TypeAsString,Id,CreatedWhen
+                    break;
+
+                default:
+                    DeviceServerApp.Logger.Error( $"Invalid format specifier <{attributes[ 0 ]}>" );
+                    throw new FormatException( "Invalid CSV format" );
+
+            } // determine format.
+
             try
             {
-                Type = (ThingType)Enum.Parse( typeof( ThingType ), attributes[ 0 ] );
+                // Deserialize type of the thing:
+                if( ef == ExternalFormat.Tiny || ef == ExternalFormat.Display )
+                {
+                    // Type has integer format, e.g. "9000":
+                    Type = (ThingType)Convert.ToUInt64( attributes[ 1 ] );
+                }
+                else
+                if( ef == ExternalFormat.Standard )
+                {
+                    // Type has string format, e.g. "Digger":
+                    Type = (ThingType)Enum.Parse( typeof( ThingType ), attributes[ 1 ] );
+                }
+
                 TypeAsString = Type.ToString();
-                Id = Guid.Parse( attributes[ 1 ] );
-                CreatedWhen = DateTime.Parse( attributes[ 2 ] );
+
+                // Deserialize the GUID of the thing:
+                if( ef == ExternalFormat.Tiny || ef == ExternalFormat.Standard )
+                {
+                    Id = Guid.Parse( attributes[ 2 ] );
+                }
+                else
+                if( ef == ExternalFormat.Display )
+                {
+                    Id = Guid.Parse( attributes[ 3 ] );
+                }
+
+                // Deserialize the birthday, if present:
+                if( ef == ExternalFormat.Standard )
+                {
+                    CreatedWhen = DateTime.Parse( attributes[ 3 ] );
+                }
+                else
+                if( ef == ExternalFormat.Display )
+                {
+                    CreatedWhen = DateTime.Parse( attributes[ 4 ] );
+                }
             }
             catch( Exception ex )
             {
@@ -101,18 +165,45 @@ namespace Relianz.DeviceServer.Etc
 
         } // ToJsonString
 
+        public string ToTinyString()
+        {
+            ulong typeAsNumber = (ulong)Type;
+
+            // T indicates tiny format: 
+            // store type as integer, do not store TypeAsString, nor date/time of thing creation:
+            string s = $"T{m_stringSeparatorChar}{typeAsNumber}{m_stringSeparatorChar}{Id}";
+
+            return s;
+
+        } // ToTinyString
+
         public override string ToString()
         {
-            // do not store TypeAsString:
-            string s = $"{Type.ToString()}{m_stringSeparatorChar}{Id.ToString()}{m_stringSeparatorChar}{CreatedWhen.ToString()}";
+            ulong typeAsNumber = (ulong)Type;
+
+            // S indicates standard format:
+            // store type as integer, do not store TypeAsString:
+            string s = $"S{m_stringSeparatorChar}{typeAsNumber}{m_stringSeparatorChar}{Id}{m_stringSeparatorChar}{CreatedWhen}";
 
             return s;
 
         } // ToString
 
-        public byte[] ToByteArray()
+        public string ToDisplayString()
         {
-            string s = this.ToString();
+            ulong typeAsNumber = (ulong)Type;
+
+            // D indicates display format: 
+            // store type both as integer and string:
+            string s = $"D{m_stringSeparatorChar}{typeAsNumber}{m_stringSeparatorChar}{Type}{m_stringSeparatorChar}{Id}{m_stringSeparatorChar}{CreatedWhen}";
+
+            return s;
+
+        } // ToDisplayString
+
+        public byte[] ToByteArray( Boolean tiny = false )
+        {
+            string s = tiny ? this.ToTinyString() : this.ToString();
 
             ASCIIEncoding enc = new ASCIIEncoding();
             return enc.GetBytes( s );
@@ -121,18 +212,29 @@ namespace Relianz.DeviceServer.Etc
 
         public byte[] ToTagBuffer()
         {
-            byte[] data = ToByteArray();
+            byte[] data = null;
+
+            if( TagBufferSize <= 48 )
+            {
+                data = ToByteArray( tiny: true );
+            }
+            else
+            {
+                data = ToByteArray();
+            }
+
             int dataLength = data.Length;
 
             if( dataLength > TagBufferSize )
             {
+                DeviceServerApp.Logger.Fatal( $"Size of thing {dataLength} exceeds tag buffer size {TagBufferSize}" );
                 return null;
             }
 
             byte[] tagBuffer = new byte[ TagBufferSize ];
             data.CopyTo( tagBuffer, 0 );
 
-            // padding:
+            // pad the remaining buffer:
             for( int i = dataLength; i < TagBufferSize; i++ )
             {
                 tagBuffer[ i ] = Convert.ToByte( m_paddingChar );
@@ -204,8 +306,9 @@ namespace Relianz.DeviceServer.Etc
         // character for padding fixed size string representation:
         private static char m_paddingChar = '*';
 
-        // buffer for tag storage:
-        private const int TagBufferSize = 128;
+        // buffer for tag storage.
+        // MIFARE Ultralight (MF0ICU1) das 48 bytes user memory (pages 4 to 15), see https://www.nxp.com/docs/en/data-sheet/MF0ICU1.pdf
+        private const int TagBufferSize = 48;
         #endregion
 
     } // class Thing
