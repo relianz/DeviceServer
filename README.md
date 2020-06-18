@@ -10,10 +10,24 @@ What already runs _(Thursday, 20/06/18 - 21:55 CEST)_:
 * Writing Thing data to / Reading Thing data from [MIFARE Ultralight](https://www.nxp.com/docs/en/data-sheet/MF0ICU1.pdf) NFC tag 
 * Services of the HTTP Server:<br/>`GET /reader`, `GET /nfctag`, `GET /readthing` and `POST /writething`
 
-![DeviceServer /readthing](./DeviceServer/media/200616%20DeviceServer,%20readthing.jpg)
-
 Because development takes place in my free time (and I love my family), progress is slow.
 
+## Examples
+### Reading thing data from NFC tag
+<pre>
+PS C:\> $response = <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-webrequest">Invoke-WebRequest</a> -Uri http://SANTACLARA.muc.smarttrust.de:9090/<b>readthing</b> -UseBasicParsing
+
+PS C:\> $response.StatusCode
+200
+
+PS C:\> $response.Content | <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/convertfrom-json">ConvertFrom-Json</a> | <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/convertto-json">ConvertTo-Json</a>
+{
+    "Type":  9000,
+    "TypeAsString":  "Digger",
+    "Id":  "fbc0ceff-ed5b-4e7e-8160-2862dfe5bf57",
+    "CreatedWhen":  "0001-01-01T00:00:00"
+}
+</pre>
 ## Softwarestack
 DeviceServer is written in C# [Version 8.0](https://stackoverflow.com/questions/247621/what-are-the-correct-version-numbers-for-c). It uses the following technologies and software modules:
 * [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
