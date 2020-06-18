@@ -18,7 +18,7 @@ Because development takes place in my free time (and I love my family), progress
 DeviceServer is written in C# [Version 8.0](https://stackoverflow.com/questions/247621/what-are-the-correct-version-numbers-for-c). It uses the following technologies and software modules:
 * [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 * [HttpListener](https://docs.microsoft.com/en-us/dotnet/api/system.net.httplistener?view=netcore-3.1)
-* [Windows Presentation Foundation](https://docs.microsoft.com/en-us/dotnet/desktop-wpf/overview/?view=vs-2019) 
+* [Windows Presentation Foundation](https://docs.microsoft.com/en-us/dotnet/desktop-wpf/overview/?view=vs-2019) with [Data binding](https://docs.microsoft.com/en-us/dotnet/desktop-wpf/data/data-binding-overview)
 * [Task Parallel Library](https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/task-parallel-library-tpl)
 * [Microsoft.Windows.SDK.Contracts](https://docs.microsoft.com/en-us/windows/apps/desktop/modernize/desktop-to-uwp-enhance)
 * [Serilog](https://github.com/serilog/serilog)
@@ -42,6 +42,7 @@ Clone the repository, open [DeviceServer.sln](./DeviceServer.sln) in VS16 and bu
 The app was tested with the following hardware:
 ### Smardcard readers
 * [ACR122U](https://www.acs.com.hk/en/products/3/acr122u-usb-nfc-reader/)
+* [HID® OMNIKEY® 5427 CK](https://www.hidglobal.com/products/readers/omnikey/5427)
 
 ### NFC tags
 * [MIFARE Ultralight](https://www.nxp.com/docs/en/data-sheet/MF0ICU1.pdf)
