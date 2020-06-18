@@ -45,5 +45,5 @@ The app was tested with the following hardware:
 * [HID® OMNIKEY® 5427 CK](https://www.hidglobal.com/products/readers/omnikey/5427)
 
 ### NFC tags
-* [MIFARE Ultralight](https://www.nxp.com/docs/en/data-sheet/MF0ICU1.pdf)
-* [MIDAS NFC Wet Inlay](https://www.smartrac-group.com/midas-nfc.html)
+* Tags with [MIFARE Ultralight](https://www.nxp.com/docs/en/data-sheet/MF0ICU1.pdf) chip
+* [MIDAS NFC Wet Inlay](https://www.smartrac-group.com/midas-nfc.html) with [NTAG® 213](https://www.nxp.com/products/rfid-nfc/nfc-hf/ntag/ntag-for-tags-labels/ntag-213-215-216-nfc-forum-type-2-tag-compliant-ic-with-144-504-888-bytes-user-memory:NTAG213_215_216) chip
