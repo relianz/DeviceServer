@@ -353,15 +353,15 @@ namespace Relianz.DeviceServer
                             switch( context.Request.HttpMethod )
                             {
                                 case "POST":
-                                {                                    
+                                {
                                     // We have a tag, write thing data to it:
                                     using( var body = context.Request.InputStream )
                                     using( var reader = new StreamReader( body, context.Request.ContentEncoding ) )
                                     {
                                         // Get the JSON formatted thing data:
                                         string json = reader.ReadToEnd();
-
                                         Thing thing = Thing.FromJsonString( json );
+                                        DeviceServerApp.Logger.Information( $"json" );
 
                                         Task<int> t = Task.Run( () => MainWindow.NfcTag.WriteThingData( thing ) );
 

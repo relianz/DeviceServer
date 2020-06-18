@@ -3,9 +3,63 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
-    <title></title>
+    <title>NFC Device Server Test Page</title>
+    <script type="text/javascript">
+
+        function sendJSON()
+        {
+            let result = document.querySelector('.result');
+            let thingType = document.querySelector('#thingType');
+            let thingId = document.querySelector('#thingId');
+
+            // Creating a XHR object:
+            let xhr = new XMLHttpRequest();
+            let url = "writething";
+
+            // open a connection:
+            xhr.open("POST", url, true);
+
+            // Set the request header i.e. which type of content you are sending:
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            // Create a state change callback:
+            xhr.onreadystatechange = function ()
+            {
+                if (xhr.readyState === 4 && xhr.status === 200)
+                {
+                    // Print received data from server:
+                    result.innerHTML = this.responseText;
+                }
+            };
+
+            // Converting JSON data to string:
+            var data = JSON.stringify({ "Type": thingType.value, "Id": thingId.value });
+
+            // Sending data with the request:
+            xhr.send(data);
+
+        } // sendJSON
+
+    </script>
 </head>
-<body>
-    NFC Device Server Test Page 
+
+<body style="text-align:center;" id="body">
+    <h1 style="color:green;">
+        NFC DeviceServer test page
+    </h1>
+
+    <p>
+        <!-- Making a text input -->
+        <input type="text"  id="thingType" placeholder="The thing type">
+        <input type="email" id="thingId" placeholder="The thing GUID">
+
+        <!-- Button to send data -->
+        <button onclick="sendJSON()">Wrtite thing to tag</button>
+
+        <!-- For printing result from server -->
+    <p class="result" style="color:green"></p>
+
+    </p>
+
 </body>
 </html>

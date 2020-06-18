@@ -45,6 +45,7 @@ namespace Relianz.DeviceServer.Etc
 
         } // enum ExternalFormat
 
+        [JsonConstructor]
         public Thing( ThingType type, Guid id )
         {
             Type = type;
