@@ -12,7 +12,7 @@ What already runs _(Thursday, 20/06/18 - 21:55 CEST)_:
 
 Because development takes place in my free time (and I love my family), progress is slow.
 
-## Examples
+## HTTP client examples
 ### Reading thing data from NFC tag
 <pre>
 PS C:\> $response = <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-webrequest">Invoke-WebRequest</a> -Uri http://SANTACLARA.muc.smarttrust.de:9090/<b>readthing</b> -UseBasicParsing
