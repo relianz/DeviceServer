@@ -70,7 +70,7 @@ Clone the repository, open [DeviceServer.sln](./DeviceServer.sln) in VS16 and bu
 
 ![DeviceServer UI](./DeviceServer/media/200618%20DeviceServer%20UI.jpg)
 
-Click on _Start Browser_ and your standard browser navigates to [index.html](./media/index.html).
+Click on _Start Browser_ and your standard browser navigates to [index.html](./DeviceServer/media/index.html).
 
 ## Hardware
 The app was tested with the following hardware:
