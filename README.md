@@ -46,6 +46,8 @@ PS C:\> $response = <a href="https://docs.microsoft.com/en-us/powershell/module/
 PS C:\> $response.StatusCode
 204
 </pre>
+See definition of `ThingType` in [Thing.cs](./DeviceServer/Thing.cs) for known thing types.
+
 ## Softwarestack
 DeviceServer is written in C# [Version 8.0](https://stackoverflow.com/questions/247621/what-are-the-correct-version-numbers-for-c). It uses the following technologies and software modules:
 * [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
