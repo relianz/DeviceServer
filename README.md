@@ -47,10 +47,10 @@ When a [UWP](https://docs.microsoft.com/en-us/windows/uwp/) app provides a netwo
 * [Microsoft Windows 10](https://docs.microsoft.com/en-us/windows/release-information/) - the App has been tested with [OS Build 17763.1217](https://support.microsoft.com/en-us/help/4551853/windows-10-update-kb4551853), any newer version of the operating system should do the job. 
 * [Microsoft Visual Studio Community 2019](https://visualstudio.microsoft.com/vs/community/)
 
-### How to build?
+### How to run?
 Clone the repository, open [DeviceServer.sln](./DeviceServer.sln) in VS16 and build the solution.
 
-![DeviceServer UI](./DeviceServer/media/200616%20DeviceServer%20UI.jpg)
+![DeviceServer UI](./DeviceServer/media/200618%20DeviceServer%20UI.jpg)
 
 Click on _Start Browser_ and your standard browser navigates to [index.html](./media/index.html).
 
