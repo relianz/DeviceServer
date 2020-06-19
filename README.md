@@ -50,7 +50,7 @@ When a [UWP](https://docs.microsoft.com/en-us/windows/uwp/) app provides a netwo
 ### How to build?
 Clone the repository, open [DeviceServer.sln](./DeviceServer.sln) in VS16 and build the solution.
 
-![DeviceServer UI](./DeviceServer/media/200618%20DeviceServer%20UI.jpg)
+![DeviceServer UI](https://github.com/relianz/DeviceServer/blob/master/200618%20DeviceServer%20UI.jpg?raw=true)
 
 ## Hardware
 The app was tested with the following hardware:
