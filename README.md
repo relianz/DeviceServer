@@ -50,7 +50,9 @@ When a [UWP](https://docs.microsoft.com/en-us/windows/uwp/) app provides a netwo
 ### How to build?
 Clone the repository, open [DeviceServer.sln](./DeviceServer.sln) in VS16 and build the solution.
 
-![DeviceServer UI](https://github.com/relianz/DeviceServer/blob/master/DeviceServer/media/200618%20DeviceServer%20UI.png?raw=true)
+![DeviceServer UI](./DeviceServer/media/200616%20DeviceServer%20UI.jpg)
+
+Click on _Start Browser_ and your standard browser navigates to [index.html](./media/index.html).
 
 ## Hardware
 The app was tested with the following hardware:
