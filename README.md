@@ -13,6 +13,8 @@ What already runs _(Thursday, 20/06/18 - 22:20 CEST)_:
 Because development takes place in my free time (and I love my family), progress is slow.
 
 ## HTTP client examples
+Following are a few simple examples that show how to use the HTTP server from within the [PowerShell](https://docs.microsoft.com/en-us/powershell/).
+
 ### Reading thing data from NFC tag
 <pre>
 PS C:\> $response = <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-webrequest">Invoke-WebRequest</a> -Uri http://SANTACLARA.muc.smarttrust.de:9090<b>/readthing</b> -UseBasicParsing
@@ -28,7 +30,7 @@ PS C:\> $response.Content | <a href="https://docs.microsoft.com/en-us/powershell
 }
 </pre>
 
-### Writing data to NFC tag 
+### Writing thing data to NFC tag 
 <pre>
 PS C:\> $thing = @{ Type = "80"; 
                     Id = [System.Guid]::NewGuid().toString() }
