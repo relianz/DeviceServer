@@ -15,8 +15,7 @@ Because development takes place in my free time (and I love my family), progress
 ## HTTP client examples
 ### Reading thing data from NFC tag
 <pre>
-PS C:\> $response = <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-webrequest">Invoke-WebRequest</a> -Uri http://SANTACLARA.muc.smarttrust.de:9090/<b>readthing</b> -UseBasicParsing
-
+PS C:\> $response = <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-webrequest">Invoke-WebRequest</a> -Uri http://SANTACLARA.muc.smarttrust.de:9090<b>/readthing</b> -UseBasicParsing
 PS C:\> $response.StatusCode
 200
 
@@ -27,6 +26,23 @@ PS C:\> $response.Content | <a href="https://docs.microsoft.com/en-us/powershell
     "Id":  "fbc0ceff-ed5b-4e7e-8160-2862dfe5bf57",
     "CreatedWhen":  "0001-01-01T00:00:00"
 }
+</pre>
+
+### Writing data to NFC tag 
+<pre>
+PS C:\> $thing = @{ Type = "80"; 
+                    Id = [System.Guid]::NewGuid().toString() }
+
+PS C:\> $json = $thing | <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/convertto-json">ConvertTo-Json</a> 
+PS C:\> $json
+{
+    "Id":  "7b3b9920-225f-4f4e-b1e3-62b08413fdd7",
+    "Type":  "80"
+}
+
+PS C:\> $response = <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-webrequest">Invoke-WebRequest</a> -uri "http://SANTACLARA.muc.smarttrust.de:9090<b>/writething</b>" -Method POST -Body $json
+PS C:\> $response.StatusCode
+204
 </pre>
 ## Softwarestack
 DeviceServer is written in C# [Version 8.0](https://stackoverflow.com/questions/247621/what-are-the-correct-version-numbers-for-c). It uses the following technologies and software modules:
