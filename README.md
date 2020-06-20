@@ -77,8 +77,39 @@ Clone the repository, open [DeviceServer.sln](./DeviceServer.sln) in VS16 and bu
 Click on _Start Browser_ and your standard browser navigates to [index.html](./DeviceServer/media/index.html).
 
 ## Emulation mode
-If a file `Thing.json` exist in the app's root directory, thing data will be read from / written to it. This simple _emulation mode_ facilitates integration tests without NFC hardware, it can be activated on the app's UI.   
+If a file `Thing.json` exist in the app's root directory, thing data will be read from / written to it. This simple _emulation mode_ facilitates integration tests without NFC hardware, it can be activated on the app's UI. 
 
+![DeviceServer UI, Emulation](./DeviceServer/media/200620%20DeviceServer%20UI,%20Emulation.png)
+
+<pre>
+PS Microsoft.PowerShell.Core\FileSystem::\\sandboxes.muc.smarttrust.de\Sandboxes\markus\Git-Repositories\DeviceServer\DeviceServer\bin\Debug\netcoreapp3.1> dir
+
+    Verzeichnis: \\sandboxes.muc.smarttrust.de\Sandboxes\markus\Git-Repositories\DeviceServer\DeviceServer\bin\Debug\netcoreapp3.1
+
+Mode                LastWriteTime         Length Name                                                                                                                              
+----                -------------         ------ ----                                                                                                                              
+d-----       20.06.2020     11:27                logs                                                                                                                              
+d-----       12.06.2020     16:21                media                                                                                                                             
+-a----       15.06.2020     12:26           4463 DeviceServer.deps.json                                                                                                            
+-a----       20.06.2020     11:27         116736 DeviceServer.dll                                                                                                                  
+-a----       20.06.2020     11:27         174592 DeviceServer.exe                                                                                                                  
+-a----       20.06.2020     11:27          35480 DeviceServer.pdb                                                                                                                  
+-a----       15.06.2020     12:26            236 DeviceServer.runtimeconfig.dev.json                                                                                               
+-a----       15.06.2020     12:26            161 DeviceServer.runtimeconfig.json                                                                                                   
+-a----       09.11.2019     00:56         693680 Newtonsoft.Json.dll                                                                                                               
+-a----       26.05.2020     00:17         127488 Serilog.dll                                                                                                                       
+-a----       15.05.2020     21:31          29696 Serilog.Sinks.File.dll                                                                                                            
+-a----       20.06.2020     12:13            143 <b>Thing.json</b>                                                                                                                        
+-a----       20.06.2020     12:11              2 Thing.json.backup                                                                                                                 
+
+PS Microsoft.PowerShell.Core\FileSystem::\\sandboxes.muc.smarttrust.de\Sandboxes\markus\Git-Repositories\DeviceServer\DeviceServer\bin\Debug\netcoreapp3.1> <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-content">Get-Content</a> -Path .\<b>Thing.json</b>
+{
+  "Type": 3,
+  "TypeAsString": "ExhaustSystem",
+  "Id": "00e5acbe-50d3-4563-ac93-94c6af6da61b",
+  "CreatedWhen": "0001-01-01T00:00:00"
+}
+</pre>
 ## Hardware
 The app was tested with the following hardware:
 ### Smardcard readers
