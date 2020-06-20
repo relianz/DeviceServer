@@ -29,6 +29,8 @@ using Pcsc;                         // CardName
 using Pcsc.Common;                  // IccDetection
 
 using Relianz.DeviceServer.Etc;     // MifareUltralightEtcTag
+using System.Reflection.Metadata.Ecma335;
+using System.IO;
 
 namespace Relianz.DeviceServer
 {
@@ -75,21 +77,34 @@ namespace Relianz.DeviceServer
 
         private void Read_Identity( object sender, RoutedEventArgs e )
         {
-            Task<Thing> t = Task.Run( () => NfcTag.ReadThingData() );
+            Thing thing = null;
 
-            int? tCurrentId = Task.CurrentId;
-            int tId = (tCurrentId == null) ? -1 : (int)tCurrentId;
-            DeviceServerApp.Logger.Information( $"In task {tId} - Waiting for task {t.Id} to complete" );
-            t.Wait();
+            if( DeviceServerApp.AllPagesViewModel.EmulationMode )
+            {
+                string pathToFile = Path.Combine( DeviceServerApp.AllPagesViewModel.RootDirectory, "Thing.json" );
+                thing = Thing.FromJsonFile( pathToFile );
 
-            Thing thing = t.Result;
+            } // reading thing data from file.
+            else
+            {
+                Task<Thing> t = Task.Run( () => NfcTag.ReadThingData() );
+
+                int? tCurrentId = Task.CurrentId;
+                int tId = (tCurrentId == null) ? -1 : (int)tCurrentId;
+                DeviceServerApp.Logger.Information( $"In task {tId} - Waiting for task {t.Id} to complete" );
+                t.Wait();
+
+                thing = t.Result;
+
+            } // reading thing data from tag.
+
             if( thing != null )
             {
                 DeviceServerApp.Logger.Information( "Success" );
                 DeviceServerApp.AllPagesViewModel.NfcTagData = thing.ToDisplayString();
             }
             else
-                DeviceServerApp.Logger.Error( $"Reading Identity failed" );
+                DeviceServerApp.Logger.Error( $"Reading thing failed!" );
 
         } // Read_Identity
 
@@ -97,15 +112,28 @@ namespace Relianz.DeviceServer
         {
             // example thing:
             Thing thing = new Thing( Thing.ThingType.ExhaustSystem );
-           
-            Task<int> t = Task.Run( () => NfcTag.WriteThingData( thing ) );
 
-            int? tCurrentId = Task.CurrentId;
-            int tId = (tCurrentId == null) ? -1 : (int)tCurrentId;
-            DeviceServerApp.Logger.Information( $"In task {tId} - Waiting for task {t.Id} to complete" );
-            t.Wait();
+            int err = -1;
 
-            int err = t.Result;
+            if( DeviceServerApp.AllPagesViewModel.EmulationMode )
+            {
+                string pathToFile = Path.Combine( DeviceServerApp.AllPagesViewModel.RootDirectory, "Thing.json" );
+                err = thing.ToJsonFile( pathToFile );
+
+            } // writing thing data to file.
+            else
+            {
+                Task<int> t = Task.Run( () => NfcTag.WriteThingData( thing ) );
+
+                int? tCurrentId = Task.CurrentId;
+                int tId = (tCurrentId == null) ? -1 : (int)tCurrentId;
+                DeviceServerApp.Logger.Information( $"In task {tId} - Waiting for task {t.Id} to complete" );
+                t.Wait();
+
+                err = t.Result;
+
+            } // writing thing data to tag.
+
             if( err == 0 )
             {
                 DeviceServerApp.Logger.Information( "Success" );

@@ -292,14 +292,26 @@ namespace Relianz.DeviceServer
                             {
                                 case "GET":
                                 {
-                                    Task<Thing> t = Task.Run( () => MainWindow.NfcTag.ReadThingData() );
+                                    Thing thing = null;
 
-                                    int? tCurrentId = Task.CurrentId;
-                                    int  tId = (tCurrentId == null) ? -1 : (int)tCurrentId;
-                                    DeviceServerApp.Logger.Information( $"In task {tId} - Waiting for task {t.Id} to complete" );
-                                    t.Wait();
+                                    if( DeviceServerApp.AllPagesViewModel.EmulationMode )
+                                    {
+                                        thing = Thing.FromJsonFile( DeviceServerApp.AllPagesViewModel.EmulationFile );
 
-                                    Thing thing = t.Result;
+                                    } // reading thing from emulation file
+                                    else
+                                    {
+                                        Task<Thing> t = Task.Run( () => MainWindow.NfcTag.ReadThingData() );
+
+                                        int? tCurrentId = Task.CurrentId;
+                                        int tId = (tCurrentId == null) ? -1 : (int)tCurrentId;
+                                        DeviceServerApp.Logger.Information( $"In task {tId} - Waiting for task {t.Id} to complete" );
+                                        t.Wait();
+
+                                        thing = t.Result;
+
+                                    } // reading thing from tag
+
                                     if( thing != null )
                                     {
                                         DeviceServerApp.Logger.Information( "Success" );
@@ -307,7 +319,9 @@ namespace Relianz.DeviceServer
                                     }
                                     else
                                     {
-                                        DeviceServerApp.Logger.Error( $"Reading thing data from tag failed" );
+                                        DeviceServerApp.Logger.Error( $"Reading thing data failed" );
+                                        response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
                                         break;
                                     }
 
@@ -363,25 +377,38 @@ namespace Relianz.DeviceServer
                                         Thing thing = Thing.FromJsonString( json );
                                         DeviceServerApp.Logger.Information( $"json" );
 
-                                        Task<int> t = Task.Run( () => MainWindow.NfcTag.WriteThingData( thing ) );
+                                        int err = -1;
 
-                                        int? tCurrentId = Task.CurrentId;
-                                        int tId = (tCurrentId == null) ? -1 : (int)tCurrentId;
-                                        DeviceServerApp.Logger.Information( $"In task {tId} - Waiting for task {t.Id} to complete" );
-                                        t.Wait();
+                                        if( DeviceServerApp.AllPagesViewModel.EmulationMode )
+                                        {
+                                            string pathToFile = Path.Combine( DeviceServerApp.AllPagesViewModel.RootDirectory, "Thing.json" );
+                                            thing.ToJsonFile( pathToFile );
 
-                                        int err = t.Result;
+                                        } // writing thing data to file.
+                                        else
+                                        {
+                                            Task<int> t = Task.Run( () => MainWindow.NfcTag.WriteThingData( thing ) );
+
+                                            int? tCurrentId = Task.CurrentId;
+                                            int tId = (tCurrentId == null) ? -1 : (int)tCurrentId;
+                                            DeviceServerApp.Logger.Information( $"In task {tId} - Waiting for task {t.Id} to complete" );
+                                            t.Wait();
+
+                                            err = t.Result;
+
+                                        } // writing thing data to NFC tag.
+
                                         if( err == 0 )
                                         {
                                             DeviceServerApp.Logger.Information( "Success" );
-                                            DeviceServerApp.AllPagesViewModel.NfcTagData = thing.ToString();
+                                            DeviceServerApp.AllPagesViewModel.NfcTagData = thing.ToDisplayString();
 
                                             response.StatusCode = (int)HttpStatusCode.NoContent;
                                             handled = true;
                                         }
                                         else
                                         {
-                                            DeviceServerApp.Logger.Error( $"Writing thing data to tag failed {err}" );
+                                            DeviceServerApp.Logger.Error( $"Writing thing data failed {err}" );
                                             response.StatusCode = (int)HttpStatusCode.InternalServerError;
                                         }
 
@@ -439,6 +466,12 @@ namespace Relianz.DeviceServer
                             break;
 
                         } // settings 
+
+                        case "/emulation":
+                        {
+                            break;
+
+                        } // emulation
 
                         case "/index.html":
                         {

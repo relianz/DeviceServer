@@ -18,6 +18,9 @@
  */
 
 using System;                           // Guid
+using System.CodeDom.Compiler;
+using System.IO;                        // File
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;                      // ASCIIEncoding
 
 using Newtonsoft.Json;                  // JsonConvert
@@ -29,6 +32,7 @@ namespace Relianz.DeviceServer.Etc
         #region public members
         public enum ThingType : ulong
         {
+            Unknown = 0,
             ExhaustSystem = 3,
             Engine = 50,
             UnderCarriage = 80,
@@ -46,14 +50,28 @@ namespace Relianz.DeviceServer.Etc
         } // enum ExternalFormat
 
         [JsonConstructor]
-        public Thing( ThingType type, Guid id )
+        public Thing( ThingType type, Guid id, DateTime? createdWhen )
         {
+            // No thing without type!
+            if( type == ThingType.Unknown )
+            {
+                DeviceServerApp.Logger.Error( $"Cannot construct thing with unknown type!" );
+                throw new InvalidOperationException();
+            }
             Type = type;
             TypeAsString = Type.ToString();
+
+            // No thing without ID:
+            if( id == Guid.Empty )
+            {
+                DeviceServerApp.Logger.Error( $"Cannot construct thing with empty ID!" );
+                throw new InvalidOperationException();
+            }
             Id = id;
 
-            CreatedWhen = DateTime.Now;
-        
+            if( createdWhen != null )
+                CreatedWhen = (DateTime)createdWhen;
+
         } // ctor
 
         public Thing( ThingType type )
@@ -61,8 +79,6 @@ namespace Relianz.DeviceServer.Etc
             Type = type;
             TypeAsString = Type.ToString();
             Id = Guid.NewGuid();
-
-            CreatedWhen = DateTime.Now;
 
         } // ctor
 
@@ -152,19 +168,95 @@ namespace Relianz.DeviceServer.Etc
 
         public static Thing FromJsonString( string jsonString )
         {
-            Thing t = JsonConvert.DeserializeObject<Thing>( jsonString );
+            Thing t = null;
+
+            try
+            {
+                t = JsonConvert.DeserializeObject<Thing>( jsonString );
+            }
+            catch( Exception x )
+            {
+                DeviceServerApp.Logger.Error( x.Message );
+            }
 
             return t;
 
         } // FromJsonString
 
-        public string ToJsonString()
+        public static Thing FromJsonFile( string pathToFile )
         {
-            string s = JsonConvert.SerializeObject( this );
+            string json;
 
+            try
+            {
+                json = File.ReadAllText( pathToFile );
+                if( json.Length == 0 )
+                {
+                    DeviceServerApp.Logger.Error( $"Zero length JSON file {pathToFile}" );
+                    return null;
+                }
+            }
+            catch( Exception x )
+            {
+                DeviceServerApp.Logger.Error( x.Message );
+                return null;
+
+            } // FromJsonFile
+
+            Thing  t = Thing.FromJsonString( json );
+            return t;
+
+        } // FromJsonFile
+
+        public string ToJsonString( bool indented = false )
+        {
+            string s = indented ? JsonConvert.SerializeObject( this, Formatting.Indented )
+                                : JsonConvert.SerializeObject( this );
             return s;
 
         } // ToJsonString
+
+        public int ToJsonFile( string pathToFile, bool overwrite = false )
+        {
+            try
+            {
+                if( !overwrite )
+                {
+                    // Check if file already exists:
+                    if( File.Exists( pathToFile ) )
+                    {
+                        string? pathName = Path.GetDirectoryName( pathToFile );
+                        string fileName = Path.GetFileName( pathToFile );
+
+                        if( pathName == null )
+                            pathName = ".";
+
+                        // make a copy of the file:
+                        string backupFileName = fileName + ".backup";
+                        File.Copy( pathToFile, Path.Combine( pathName, backupFileName ) );
+
+                    } // file exists
+
+                } // !overwrite
+
+                // serialize object to JSON string with pretty printing:
+                string json = ToJsonString( indented: true );
+
+                // write JSON string to file:
+                using( StreamWriter sw = new StreamWriter( pathToFile, false ) )
+                {
+                    sw.Write( json );
+                }
+            }
+            catch( Exception x )
+            {
+                DeviceServerApp.Logger.Error( x.Message );
+                return -1;
+            }
+
+            return 0;
+
+        } // ToJsonFile
 
         public string ToTinyString()
         {

@@ -18,6 +18,9 @@
  */
 
 using System.ComponentModel;            // INotifyPropertyChanged
+using System.Windows;                   // MessageBox
+using System.IO;                        // Path
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace Relianz.DeviceServer
 {
@@ -150,6 +153,40 @@ namespace Relianz.DeviceServer
 
         } // NfcTagUid
 
+        public bool EmulationMode 
+        { 
+            get => m_emulationMode;
+            set
+            {
+                if( value != m_emulationMode )
+                {
+                    if( !m_emulationMode )
+                    {
+                        // try to switch to emulation mode:
+                        if( SwitchToEmulationMode() )
+                        {
+                            m_emulationMode = true;
+                            OnPropertyChanged( "EmulationMode" );
+                        }
+                    }
+                    else
+                    {
+                        // try to switch to NFC tag mode:
+                        if( SwitchToNfcMode() )
+                        {
+                            m_emulationMode = false;
+                            OnPropertyChanged( "EmulationMode" );
+                        }
+                    }
+
+                } // value changed
+
+            } // set
+
+        } // EmulationMode
+
+        public string EmulationFile { get => m_emulationFile; private set => m_emulationFile = value; }
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged( string propertyName )
         {
@@ -160,10 +197,52 @@ namespace Relianz.DeviceServer
         #endregion
 
         #region private members
+        private bool SwitchToEmulationMode()
+        {
+            EmulationFile = Path.Combine( DeviceServerApp.AllPagesViewModel.RootDirectory, "Thing.json" );
+            if( File.Exists( EmulationFile ) )
+            {
+                TagOnReader = true;
+
+                NfcTagAtr = "[using file emulation]";
+                NfcTagUid = "[using file emulation]";
+
+                DeviceServerApp.Logger.Information( $"Susscess, using file {EmulationFile}" );
+
+                return true;
+
+            } // emulation file exists.
+            else
+            {
+                string msg = $"Missing emulation file\n{EmulationFile}";
+
+                DeviceServerApp.Logger.Error( msg );
+                MessageBox.Show( msg, "DeviceServer emulation mode", MessageBoxButton.OK );
+
+                return false;
+
+            } // emulation file missing.
+
+        } // SwitchToEmulationMode
+
+        private bool SwitchToNfcMode()
+        {
+            // TODO: Check availability of tag!
+
+            NfcTagAtr = "(no tag present)";
+            NfcTagUid = "(no tag present)";
+
+            TagOnReader = false;
+
+            return true;
+
+        } // SwitchToNfcMode
+
         private string m_logFileLocation;
 
         private string m_deviceServerUri;
         private string m_rootDirectory;
+        private string m_emulationFile;
 
         private string m_NfcReader;
         private string m_NfcTagAtr;
@@ -171,6 +250,7 @@ namespace Relianz.DeviceServer
         private string m_NfcTagData;
 
         private bool m_tagOnReader;
+        private bool m_emulationMode;
         #endregion
 
     } // class ViewModel

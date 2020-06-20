@@ -51,6 +51,8 @@
                 <TextBox x:Name="nfcTagUid"  HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="150"  
                     TextWrapping="Wrap" IsReadOnly="True" VerticalContentAlignment="Center" Cursor="Cross" BorderThickness="0" 
                     Text="{Binding NfcTagUid}"/>
+                <Label Content="Emulation:" HorizontalAlignment="Right" VerticalAlignment="Top" Height="26"  Width="80" FontWeight="Bold" />
+                <CheckBox VerticalAlignment="Center" IsChecked="{Binding EmulationMode}"/>
             </WrapPanel>
 
             <WrapPanel Orientation="Horizontal" Width="1050">
