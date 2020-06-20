@@ -4,11 +4,12 @@ A WPF app with an integrated HTTP server that enables the web browser to access 
 ## Status
 The Software is **WIP**, development started on June 11, 2020. 
 
-What already runs _(Thursday, 20/06/18 - 22:20 CEST)_:
+What already runs _(Saturday, 20/06/20 - 8:35 CEST)_:
 * Identification of Smartcard readers
 * Identification of NFC tags
 * Writing Thing data to / Reading Thing data from [MIFARE Ultralight](https://www.nxp.com/docs/en/data-sheet/MF0ICU1.pdf) NFC tag 
 * Services of the HTTP Server:<br/>`GET /reader`, `GET /nfctag`, `GET /readthing` and `POST /writething`
+* Simple file based emulation mode
 
 Because development takes place in my free time (and I love my family), progress is slow.
 
@@ -67,12 +68,16 @@ When a [UWP](https://docs.microsoft.com/en-us/windows/uwp/) app provides a netwo
 * [Microsoft Windows 10](https://docs.microsoft.com/en-us/windows/release-information/) - the App has been tested with [OS Build 17763.1217](https://support.microsoft.com/en-us/help/4551853/windows-10-update-kb4551853), any newer version of the operating system should do the job. 
 * [Microsoft Visual Studio Community 2019](https://visualstudio.microsoft.com/vs/community/)
 
-### How to run?
+# How to run?
+## Building the app
 Clone the repository, open [DeviceServer.sln](./DeviceServer.sln) in VS16 and build the solution.
 
 ![DeviceServer UI](./DeviceServer/media/200618%20DeviceServer%20UI.jpg)
 
 Click on _Start Browser_ and your standard browser navigates to [index.html](./DeviceServer/media/index.html).
+
+## Emulation mode
+If a file `Thing.json` exist in the app's root directory, thing data will be read from / written to it. This simple _emulation mode_ facilitates integration tests without NFC hardware, it can be activated on the app's UI.   
 
 ## Hardware
 The app was tested with the following hardware:
