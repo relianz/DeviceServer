@@ -72,7 +72,7 @@ When a [UWP](https://docs.microsoft.com/en-us/windows/uwp/) app provides a netwo
 ## Building the app
 Clone the repository, open [DeviceServer.sln](./DeviceServer.sln) in VS16 and build the solution.
 
-![DeviceServer UI](./DeviceServer/media/200618%20DeviceServer%20UI.jpg)
+![DeviceServer UI](./DeviceServer/media/200620%20DeviceServer%20UI.png)
 
 Click on _Start Browser_ and your standard browser navigates to [index.html](./DeviceServer/media/index.html).
 
