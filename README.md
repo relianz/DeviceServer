@@ -1,6 +1,13 @@
 # DeviceServer
 A WPF app with an integrated HTTP server that enables the web browser to access local smartcard devices that would otherwise not be accessible via JavaScript.
 
+Table of Contents
+=================
+
+  * [DeviceServer](#DeviceServer)
+    * [Status](#Status)
+    * [HTTP client examples](#HTTP%20client%20examples)
+    
 ## Status
 The Software is **WIP**, development started on June 11, 2020. 
 
