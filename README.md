@@ -6,7 +6,7 @@ Table of Contents
 
   * [DeviceServer](#DeviceServer)
     * [Status](#Status)
-    * [HTTP client examples](#HTTP%20client%20examples)
+    * [HTTP client examples](#HTTP-client-examples)
     
 ## Status
 The Software is **WIP**, development started on June 11, 2020. 
