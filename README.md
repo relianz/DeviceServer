@@ -61,7 +61,7 @@ PS C:\> $json
     "Type":  "80"
 }
 
-PS C:\> $response = <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-webrequest">Invoke-WebRequest</a> -uri "http://SANTACLARA.muc.smarttrust.de:9090<b>/writething</b>" -Method POST -Body $json
+PS C:\> $response = <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-webrequest">Invoke-WebRequest</a> -Uri http://SANTACLARA.muc.smarttrust.de:9090<b>/writething</b> -Method POST -Body $json
 PS C:\> $response.StatusCode
 204
 </pre>
