@@ -99,7 +99,7 @@ If a file `Thing.json` exist in the app's root directory, thing data will be rea
 
 ![DeviceServer UI, Emulation](./DeviceServer/media/200620%20DeviceServer%20UI,%20Emulation.png)
 
-The following is a file `Thing.json` created in emulation mode:
+The following is a file `Thing.json` resulting from a `POST /writething` in emulation mode:
 <pre>
 PS Microsoft.PowerShell.Core\FileSystem::\\sandboxes.muc.smarttrust.de\Sandboxes\markus\Git-Repositories\DeviceServer\DeviceServer\bin\Debug\netcoreapp3.1> dir
 
