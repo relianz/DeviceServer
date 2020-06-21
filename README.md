@@ -7,6 +7,17 @@ Table of Contents
   * [DeviceServer](#DeviceServer)
     * [Status](#Status)
     * [HTTP client examples](#HTTP-client-examples)
+      * [Reading thing data from NFC tag] (#Reading-thing-data-from-NFC-tag)
+      * [Writing thing data to NFC tag] (#Writing-thing-data-to-NFC-tag )
+    * [Softwarestack] (#Softwarestack)
+      * [Why not building an UWP app?](#Why-not-building-an-UWP-app?)
+    * [Platform & Tools](#Platform-&-Tools)
+    * [How to run?](#How-to-run?)
+      * [Building the app](#Building-the-app)
+      * [Emulation mode](#Emulation-mode)
+    * [Hardware](#Hardware)
+      * [Smardcard readers](#Smardcard-readers)
+      * [NFC tags](#NFC-tags)
     
 ## Status
 The Software is **WIP**, development started on June 11, 2020. 
@@ -75,15 +86,15 @@ When a [UWP](https://docs.microsoft.com/en-us/windows/uwp/) app provides a netwo
 * [Microsoft Windows 10](https://docs.microsoft.com/en-us/windows/release-information/) - the App has been tested with [OS Build 17763.1217](https://support.microsoft.com/en-us/help/4551853/windows-10-update-kb4551853), any newer version of the operating system should do the job. 
 * [Microsoft Visual Studio Community 2019](https://visualstudio.microsoft.com/vs/community/)
 
-# How to run?
-## Building the app
+## How to run?
+### Building the app
 Clone the repository, open [DeviceServer.sln](./DeviceServer.sln) in VS16 and build the solution.
 
 ![DeviceServer UI](./DeviceServer/media/200620%20DeviceServer%20UI.png)
 
 Click on _Start Browser_ and your standard browser navigates to [index.html](./DeviceServer/media/index.html).
 
-## Emulation mode
+### Emulation mode
 If a file `Thing.json` exist in the app's root directory, thing data will be read from / written to it. This simple _emulation mode_ facilitates integration tests without NFC hardware, it can be activated on the app's UI. 
 
 ![DeviceServer UI, Emulation](./DeviceServer/media/200620%20DeviceServer%20UI,%20Emulation.png)
