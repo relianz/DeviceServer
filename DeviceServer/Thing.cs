@@ -353,8 +353,8 @@ namespace Relianz.DeviceServer.Etc
             }
 
             if( !found )
-            { 
-                return null;
+            {
+                DeviceServerApp.Logger.Warning( $"No padding character!" );
             }
 
             byte[] csvData = new byte[ indexFirstPad ];
@@ -363,7 +363,8 @@ namespace Relianz.DeviceServer.Etc
                 csvData[ i ] = buffer[ i ];
             }
 
-            return FromByteArray( csvData );
+            Thing  thing = Thing.FromByteArray( csvData );
+            return thing;
 
         } // FromTagBuffer
 
