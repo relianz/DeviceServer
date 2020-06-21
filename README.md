@@ -81,6 +81,7 @@ If a file `Thing.json` exist in the app's root directory, thing data will be rea
 
 ![DeviceServer UI, Emulation](./DeviceServer/media/200620%20DeviceServer%20UI,%20Emulation.png)
 
+The following is a file `Thing.json` created in emulation mode:
 <pre>
 PS Microsoft.PowerShell.Core\FileSystem::\\sandboxes.muc.smarttrust.de\Sandboxes\markus\Git-Repositories\DeviceServer\DeviceServer\bin\Debug\netcoreapp3.1> dir
 
@@ -104,9 +105,9 @@ d-----       12.06.2020     16:21                media
 
 PS Microsoft.PowerShell.Core\FileSystem::\\sandboxes.muc.smarttrust.de\Sandboxes\markus\Git-Repositories\DeviceServer\DeviceServer\bin\Debug\netcoreapp3.1> <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-content">Get-Content</a> -Path .\<b>Thing.json</b>
 {
-  "Type": 3,
+  "<b>Type</b>": 3,
   "TypeAsString": "ExhaustSystem",
-  "Id": "00e5acbe-50d3-4563-ac93-94c6af6da61b",
+  "<b>Id</b>": "00e5acbe-50d3-4563-ac93-94c6af6da61b",
   "CreatedWhen": "0001-01-01T00:00:00"
 }
 </pre>
