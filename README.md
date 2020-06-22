@@ -4,20 +4,19 @@ A WPF app with an integrated HTTP server that enables the web browser to access 
 Table of Contents
 =================
 
-  * [DeviceServer](#DeviceServer)
-    * [Status](#Status)
-    * [HTTP client examples](#HTTP-client-examples)
-      * [Reading thing data from NFC tag](#Reading-thing-data-from-NFC-tag)
-      * [Writing thing data to NFC tag](#Writing-thing-data-to-NFC-tag )
-    * [Softwarestack](#Softwarestack)
-      * [Why not building an UWP app?](#Why-not-building-an-UWP-app?)
-    * [Platform & Tools](#Platform-&-Tools)
-    * [How to run?](#How-to-run?)
-      * [Building the app](#Building-the-app)
-      * [Emulation mode](#Emulation-mode)
-    * [Hardware](#Hardware)
-      * [Smardcard readers](#Smardcard-readers)
-      * [NFC tags](#NFC-tags)
+  * [Status](#Status)
+  * [HTTP client examples](#HTTP-client-examples)
+    * [Reading thing data from NFC tag](#Reading-thing-data-from-NFC-tag)
+    * [Writing thing data to NFC tag](#Writing-thing-data-to-NFC-tag )
+  * [Softwarestack](#Softwarestack)
+    * [Why not building an UWP app?](#Why-not-building-an-UWP-app?)
+  * [Platform & Tools](#Platform-&-Tools)
+  * [How to run?](#How-to-run?)
+    * [Building the app](#Building-the-app)
+    * [Emulation mode](#Emulation-mode)
+  * [Hardware](#Hardware)
+    * [Smardcard readers](#Smardcard-readers)
+    * [NFC tags](#NFC-tags)
     
 ## Status
 The Software is **WIP**, development started on June 11, 2020. 
