@@ -5,7 +5,7 @@ Table of Contents
 =================
 
   * [Status](#Status)
-    * [What is a thing?](#What-is-a-thing\?)
+    * [What is a thing?](#What-is-a-thing&#63;)
   * [HTTP client examples](#HTTP-client-examples)
     * [Reading thing data from NFC tag](#Reading-thing-data-from-NFC-tag)
     * [Writing thing data to NFC tag](#Writing-thing-data-to-NFC-tag )
