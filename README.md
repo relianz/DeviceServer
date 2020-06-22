@@ -5,12 +5,12 @@ Table of Contents
 =================
 
   * [Status](#Status)
-    * [What is a thing?](#What-is-a-thing&#63;)
+    * [What is a thing?](#What-is-a-thing)
   * [HTTP client examples](#HTTP-client-examples)
     * [Reading thing data from NFC tag](#Reading-thing-data-from-NFC-tag)
     * [Writing thing data to NFC tag](#Writing-thing-data-to-NFC-tag )
   * [Softwarestack](#Softwarestack)
-    * [Why not building an UWP app?](#Why-not-building-an-UWP-app?)
+    * [Why not building an UWP app?](#Why-not-building-an-UWP-app)
   * [Platform & Tools](#Platform-&-Tools)
   * [How to run?](#How-to-run?)
     * [Building the app](#Building-the-app)
