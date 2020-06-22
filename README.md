@@ -12,7 +12,7 @@ Table of Contents
   * [Softwarestack](#Softwarestack)
     * [Why not building an UWP app?](#Why-not-building-an-UWP-app)
   * [Platform & Tools](#Platform-&-Tools)
-  * [How to run?](#How-to-run?)
+  * [How to run?](#How-to-run)
     * [Building the app](#Building-the-app)
     * [Emulation mode](#Emulation-mode)
   * [Hardware](#Hardware)
