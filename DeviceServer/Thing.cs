@@ -18,9 +18,7 @@
  */
 
 using System;                           // Guid
-using System.CodeDom.Compiler;
 using System.IO;                        // File
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;                      // ASCIIEncoding
 
 using Newtonsoft.Json;                  // JsonConvert
