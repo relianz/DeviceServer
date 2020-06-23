@@ -6,6 +6,7 @@ Table of Contents
 
   * [Status](#Status)
     * [What is a thing?](#What-is-a-thing)
+    * [Thing ID and serial number](#Thing-ID-and-serial-number)
   * [HTTP client examples](#HTTP-client-examples)
     * [Reading thing data from NFC tag](#Reading-thing-data-from-NFC-tag)
     * [Writing thing data to NFC tag](#Writing-thing-data-to-NFC-tag )
@@ -33,6 +34,9 @@ Because development takes place in my free time (and I love my family), progress
 
 ### What is a thing?
 A thing is a physical asset modeled by a [digital twin](https://en.wikipedia.org/wiki/Digital_twin). In the DeviceServer a thing is identified by a _type_ and a unique _ID_. A [GUID](https://de.wikipedia.org/wiki/Globally_Unique_Identifier) is used as ID, see class definition [Thing.cs](./DeviceServer/Thing.cs). After the production of a thing, the type and ID are written to an NFC tag by the DeviceServer and can be read again afterwards. The ID then serves as a pointer to a complex data set, which is stored e.g. in the digital twin in the cloud or in a storage built on [distributed ledger technology](https://en.wikipedia.org/wiki/Distributed_ledger). 
+
+### Thing ID and serial number
+The thing ID is not related to the [serial number](https://en.wikipedia.org/wiki/Serial_number) of a physical asset. Unlike the ID, serial numbers are not necessarily unique; different manufacturers of products may use the same serial numbers. They are therefore stored as a normal attribute in the digital twin. 
 
 ## HTTP client examples
 Following are a few simple examples that show how to use the HTTP server from within the [PowerShell](https://docs.microsoft.com/en-us/powershell/).
