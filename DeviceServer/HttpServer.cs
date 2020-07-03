@@ -170,6 +170,10 @@ namespace Relianz.DeviceServer
         {
             DeviceServerApp.Logger.Information( "Processing request from <" + context.Request.Url.ToString() + ">" );
 
+            // Enable Cross-Origin Resource Sharing - (Thank you Lukas!):
+            context.Response.AddHeader( "Access-Control-Allow-Origin", "*" );
+            context.Response.AddHeader( "Access-Control-Allow-Headers", "*" );
+
             using( var response = context.Response )
             {
                 bool handled = false;
@@ -382,7 +386,7 @@ namespace Relianz.DeviceServer
                                         if( DeviceServerApp.AllPagesViewModel.EmulationMode )
                                         {
                                             string pathToFile = Path.Combine( DeviceServerApp.AllPagesViewModel.RootDirectory, "Thing.json" );
-                                            thing.ToJsonFile( pathToFile );
+                                            err = thing.ToJsonFile( pathToFile );
 
                                         } // writing thing data to file.
                                         else
@@ -415,7 +419,15 @@ namespace Relianz.DeviceServer
                                     } // using using 
 
                                     break;
-                                }
+
+                                } // POST method
+                                case "OPTIONS":
+                                {
+                                    response.StatusCode = (int)HttpStatusCode.NoContent;
+                                    handled = true;
+                                    break;
+
+                                } // OPTIONS method
                                 default:
                                 {
                                     DeviceServerApp.Logger.Error( $"Invalid HTTP method {context.Request.HttpMethod} for /writething" );
