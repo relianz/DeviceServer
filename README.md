@@ -140,6 +140,7 @@ PS Microsoft.PowerShell.Core\FileSystem::\\sandboxes.muc.smarttrust.de\Sandboxes
 The app was tested with the following hardware:
 ### Smardcard readers
 * [ACR122U](https://www.acs.com.hk/en/products/3/acr122u-usb-nfc-reader/)
+* [ACR1255U-J1](https://www.acs.com.hk/en/products/403/acr1255u-j1-acs-secure-bluetooth%C2%AE-nfc-reader/) Bluetooth®
 * [HID® OMNIKEY® 5427 CK](https://www.hidglobal.com/products/readers/omnikey/5427)
 
 ### NFC tags
