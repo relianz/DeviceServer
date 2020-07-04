@@ -4,7 +4,7 @@ A WPF app with an integrated HTTP server that enables the web browser to access 
 Table of Contents
 =================
 
-  * [Status](#Status)
+  * [Motivation](#Motivation)
     * [What is a thing?](#What-is-a-thing)
     * [Thing ID and serial number](#Thing-ID-and-serial-number)
   * [HTTP client examples](#HTTP-client-examples)
@@ -12,6 +12,7 @@ Table of Contents
     * [Writing thing data to NFC tag](#Writing-thing-data-to-NFC-tag )
   * [Softwarestack](#Softwarestack)
     * [Why not building an UWP app?](#Why-not-building-an-UWP-app)
+    * [Status](#Status)
   * [Platform & Tools](#Platform-&-Tools)
   * [How to run?](#How-to-run)
     * [Building the app](#Building-the-app)
@@ -20,17 +21,8 @@ Table of Contents
     * [Smardcard readers](#Smardcard-readers)
     * [NFC tags](#NFC-tags)
     
-## Status
-The Software is **WIP**, development started on June 11, 2020. 
-
-What already runs _(Saturday, 20/06/20 - 8:35 CEST)_:
-* Identification of Smartcard readers
-* Identification of NFC tags
-* Writing Thing data to / Reading Thing data from [MIFARE Ultralight](https://www.nxp.com/docs/en/data-sheet/MF0ICU1.pdf) NFC tag 
-* Services of the HTTP Server:<br/>`GET /reader`, `GET /nfctag`, `GET /readthing` and `POST /writething`
-* Simple file based emulation mode
-
-Because development takes place in my free time (and I love my family), progress is slow.
+## Motivation
+The client part of a Web application often needs to access local devices. One example is access to NFC hardware. Specifications like [Web NFC](https://w3c.github.io/web-nfc/) for direct support by the browser are not yet generally available, so I came up with the idea of a local program that allows access to local resources via an HTTP interface.
 
 ### What is a thing?
 A thing is a physical asset modeled by a [digital twin](https://en.wikipedia.org/wiki/Digital_twin). In the DeviceServer a thing is identified by a _type_ and a unique _ID_. A [GUID](https://de.wikipedia.org/wiki/Globally_Unique_Identifier) is used as ID, see class definition [Thing.cs](./DeviceServer/Thing.cs). After the production of a thing, the type and ID are written to an NFC tag by the DeviceServer and can be read again afterwards. The ID then serves as a pointer to a complex data set, which is stored e.g. in the digital twin in the cloud or in a storage built on [distributed ledger technology](https://en.wikipedia.org/wiki/Distributed_ledger). 
@@ -88,6 +80,19 @@ You do not have to obtain any packages manually, the project file [DeviceServer.
 
 ### Why not building an UWP app?
 When a [UWP](https://docs.microsoft.com/en-us/windows/uwp/) app provides a network service, only _its own code_ or an app _on another machine_ can access the service. Since the app and the web browser should run on the same machine, UWP is not an alternative.
+
+### Status
+The Software is **WIP**, development started on June 11, 2020. 
+
+What already runs _(Saturday, 20/07/04 - 13:20 CEST)_:
+* Identification of Smartcard readers
+* Identification of NFC tags
+* Writing Thing data to / Reading Thing data from [MIFARE Ultralight](https://www.nxp.com/docs/en/data-sheet/MF0ICU1.pdf) NFC tag 
+* Services of the HTTP Server:<br/>`GET /reader`, `GET /nfctag`, `GET /readthing` and `POST /writething`
+* Simple file based emulation mode
+* Setting [CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) response headers
+
+Because development takes place in my free time (and I love my family), progress is slow.
 
 ## Platform & Tools
 * [Microsoft Windows 10](https://docs.microsoft.com/en-us/windows/release-information/) - the App has been tested with [OS Build 17763.1217](https://support.microsoft.com/en-us/help/4551853/windows-10-update-kb4551853), any newer version of the operating system should do the job. 
