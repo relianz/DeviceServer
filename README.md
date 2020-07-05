@@ -13,7 +13,7 @@ Table of Contents
   * [Softwarestack](#Softwarestack)
     * [Why not building an UWP app?](#Why-not-building-an-UWP-app)
     * [Status](#Status)
-  * [Platform & Tools](#Platform-Tools)
+  * [Platform and Tools](#Platform-and-Tools)
   * [How to run?](#How-to-run)
     * [Building the app](#Building-the-app)
     * [Emulation mode](#Emulation-mode)
@@ -94,7 +94,7 @@ What already runs _(Saturday, 20/07/04 - 13:20 CEST)_:
 
 Because development takes place in my free time (and I love my family), progress is slow.
 
-## Platform & Tools
+## Platform and Tools
 * [Microsoft Windows 10](https://docs.microsoft.com/en-us/windows/release-information/) - the App has been tested with [OS Build 17763.1217](https://support.microsoft.com/en-us/help/4551853/windows-10-update-kb4551853), any newer version of the operating system should do the job. 
 * [Microsoft Visual Studio Community 2019](https://visualstudio.microsoft.com/vs/community/)
 
