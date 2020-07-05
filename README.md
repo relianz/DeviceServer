@@ -1,5 +1,5 @@
 # DeviceServer
-A WPF app with an integrated HTTP server that enables the web browser to access local smartcard devices that would otherwise not be accessible via JavaScript.
+A WPF app with an integrated HTTP server that enables the web browser to access local hardware devices that would otherwise not be accessible via JavaScript.
 
 Table of Contents
 =================
@@ -23,6 +23,8 @@ Table of Contents
     
 ## Motivation
 The client part of a Web application often needs to access local devices. One example is access to NFC hardware. Specifications like [Web NFC](https://w3c.github.io/web-nfc/) for direct support by the browser are not yet generally available, so I came up with the idea of a local program that allows access to local resources via an HTTP interface.
+
+NFC tags are very well suited for identifying things. They are [cheap](https://en.wikipedia.org/wiki/Near-field_communication#Bluetooth_comparison) and robust.
 
 ### What is a thing?
 A thing is a physical asset modeled by a [digital twin](https://en.wikipedia.org/wiki/Digital_twin). In the DeviceServer a thing is identified by a _type_ and a unique _ID_. A [GUID](https://de.wikipedia.org/wiki/Globally_Unique_Identifier) is used as ID, see class definition [Thing.cs](./DeviceServer/Thing.cs). After the production of a thing, the type and ID are written to an NFC tag by the DeviceServer and can be read again afterwards. The ID then serves as a pointer to a complex data set, which is stored e.g. in the digital twin in the cloud or in a storage built on [distributed ledger technology](https://en.wikipedia.org/wiki/Distributed_ledger). 
