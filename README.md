@@ -24,6 +24,8 @@ Table of Contents
 ## Motivation
 The client part of a Web application often needs to access local devices. One example is access to NFC hardware. Specifications like [Web NFC](https://w3c.github.io/web-nfc/) for direct support by the browser are not yet generally available, so I came up with the idea of a local program that allows access to local resources via an HTTP interface.
 
+![System sketch](./DeviceServer/media/200705%20DeviceServer.png)
+
 NFC tags are very well suited for identifying things. They are [cheap](https://en.wikipedia.org/wiki/Near-field_communication#Bluetooth_comparison) and robust.
 
 ### What is a thing?
