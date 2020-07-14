@@ -17,6 +17,7 @@ Table of Contents
   * [How to run?](#How-to-run)
     * [Building the app](#Building-the-app)
     * [Emulation mode](#Emulation-mode)
+    * [Running the server without Visual Studio](#Running-the-server-without-Visual-Studio)
   * [Hardware](#Hardware)
     * [Smardcard readers](#Smardcard-readers)
     * [NFC tags](#NFC-tags)
@@ -145,6 +146,11 @@ PS Microsoft.PowerShell.Core\FileSystem::\\sandboxes.muc.smarttrust.de\Sandboxes
   "CreatedWhen": "0001-01-01T00:00:00"
 }
 </pre>
+### Running the server without Visual Studio
+To run the DeviceServer on a computer with Windows 10, a number of six files are required, which are located in the folder [bin/Debug/netcoreapp3.1](./DeviceServer/bin/Debug/netcoreapp3.1). Additionally version 3.1 of the [.NET Core Desktop Runtime](https://dotnet.microsoft.com/download/dotnet-core/3.1) is required. The installation requires administration rights.
+ 
+You also need a PC/SC device driver for the NFC reader to be used.  
+
 ## Hardware
 The app was tested with the following hardware:
 ### Smardcard readers
