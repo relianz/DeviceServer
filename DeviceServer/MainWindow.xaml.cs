@@ -77,7 +77,7 @@ namespace Relianz.DeviceServer
 
         private void Read_Identity( object sender, RoutedEventArgs e )
         {
-            Thing thing = null;
+            Thing? thing = null;
 
             if( DeviceServerApp.AllPagesViewModel.EmulationMode )
             {
@@ -92,9 +92,17 @@ namespace Relianz.DeviceServer
                 int? tCurrentId = Task.CurrentId;
                 int tId = (tCurrentId == null) ? -1 : (int)tCurrentId;
                 DeviceServerApp.Logger.Information( $"In task {tId} - Waiting for task {t.Id} to complete" );
-                t.Wait();
 
-                thing = t.Result;
+                try
+                {
+                    t.Wait();
+                    thing = t.Result;
+                }
+                catch( Exception x )
+                {
+                    thing = null;
+                    DeviceServerApp.Logger.Error( $"Exception: {x.Message}" );
+                }
 
             } // reading thing data from tag.
 
