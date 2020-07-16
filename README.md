@@ -93,7 +93,7 @@ What already runs _(Thursday, 20/07/16 - 13:10 CEST)_:
 * Identification of Smartcard readers
 * Identification of NFC tags
 * Writing Thing data to / Reading Thing data from [MIFARE Ultralight](https://www.nxp.com/docs/en/data-sheet/MF0ICU1.pdf) NFC tag 
-* Services of the HTTP Server:<br/>`GET /settings, `GET /reader`, `GET /nfctag`, `GET /readthing` and `POST /writething`
+* Services of the HTTP Server:<br/>`GET /settings`, `GET /reader`, `GET /nfctag`, `GET /readthing` and `POST /writething`
 * Simple file based emulation mode
 * Setting [CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) response headers
 
