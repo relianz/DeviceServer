@@ -18,9 +18,9 @@
  */
 
 using System.ComponentModel;            // INotifyPropertyChanged
+using System.Reflection;                // Assembly
 using System.Windows;                   // MessageBox
 using System.IO;                        // Path
-using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace Relianz.DeviceServer
 {
@@ -29,9 +29,63 @@ namespace Relianz.DeviceServer
         #region public members
         public ViewModel()
         {
-            DeviceServerApp.Logger.Information( "ViewModel created." );
+            m_productName = "DeviceServer";
+
+            Assembly assembly = typeof( DeviceServerApp ).Assembly;
+            foreach( var attr in assembly.GetCustomAttributes() )
+            {
+                switch( attr )
+                {
+                    case AssemblyProductAttribute a:
+                        m_productName = a.Product;
+                        break;
+
+                    default:
+                        break;
+                }
+
+            } // for each custom attribute
+
+            m_assyVersion = assembly.GetName().Version.ToString();
+            m_coreVersion = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription.ToString();
+
+            WindowTitle = ProductName + ", Version " + AssyVersion;
+
+            DeviceServerApp.Logger.Information( $"ViewModel created." );
+            DeviceServerApp.Logger.Information( $"Product = {ProductName}" );
+            DeviceServerApp.Logger.Information( $"App version = {AssyVersion}, Core version = {CoreVersion}" );
 
         } // ctor 
+
+        public string ProductName
+        {
+            get => m_productName;
+            set
+            {
+                if( value != m_productName )
+                {
+                    m_productName = value;
+                    OnPropertyChanged( "ProductName" );
+                }
+
+            } // set
+
+        } // LogFileLocation
+
+        public string WindowTitle
+        {
+            get => m_windowTitle;
+            set
+            {
+                if( value != m_windowTitle )
+                {
+                    m_windowTitle = value;
+                    OnPropertyChanged( "WindowTitle" );
+                }
+
+            } // set
+
+        } // LogFileLocation
 
         public string LogFileLocation
         {
@@ -186,6 +240,8 @@ namespace Relianz.DeviceServer
         } // EmulationMode
 
         public string EmulationFile { get => m_emulationFile; private set => m_emulationFile = value; }
+        public string AssyVersion { get => m_assyVersion; }
+        public string CoreVersion { get => m_coreVersion; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged( string propertyName )
@@ -251,6 +307,11 @@ namespace Relianz.DeviceServer
 
         private bool m_tagOnReader;
         private bool m_emulationMode;
+
+        private string m_assyVersion;
+        private string m_coreVersion;
+        private string m_productName;
+        private string m_windowTitle;
         #endregion
 
     } // class ViewModel

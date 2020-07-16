@@ -8,7 +8,7 @@
         Closing="Window_Closing"
         
         mc:Ignorable="d"
-        Title="NFC Device Server" Height="600" Width="1200">
+        Title="{Binding WindowTitle}" Height="600" Width="1200">
  
         <Grid Margin="0,0,0,0">
 

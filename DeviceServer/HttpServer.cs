@@ -27,6 +27,7 @@ using System.Collections.Generic;       // IDictionary
 
 using Newtonsoft.Json;                  // JsonConvert
 using Relianz.DeviceServer.Etc;
+using System.Security.RightsManagement;
 
 namespace Relianz.DeviceServer
 {
@@ -468,6 +469,7 @@ namespace Relianz.DeviceServer
                                     response.ContentLength64 = buffer.Length;
                                     response.OutputStream.Write( buffer, 0, buffer.Length );
 
+                                    settings.BytesServed += buffer.Length;
                                     handled = true;
 
                                     break;
@@ -486,12 +488,6 @@ namespace Relianz.DeviceServer
                             break;
 
                         } // settings 
-
-                        case "/emulation":
-                        {
-                            break;
-
-                        } // emulation
 
                         case "/index.html":
                         {
@@ -676,19 +672,23 @@ namespace Relianz.DeviceServer
             RootDir = rootDir;
             LogFileDir = DeviceServerApp.AllPagesViewModel.LogFileLocation;
 
+            Runtime = DeviceServerApp.AllPagesViewModel.AssyVersion 
+                    + "/" + DeviceServerApp.AllPagesViewModel.CoreVersion;
         } // ctor
 
         public string IpAddr { get => m_ipAddr; private set => m_ipAddr = value; }
         public int Port { get => m_port; private set => m_port = value; }
         public string RootDir { get => m_rootDir; private set => m_rootDir = value; }
         public string LogFileDir { get => m_logFileDir; private set => m_logFileDir = value; }
-        public string BytesServed { get => m_bytesServed; set => m_bytesServed = value; }
-        
+        public long BytesServed { get => m_bytesServed; set => m_bytesServed = value; }
+        public string Runtime { get => m_runtime; set => m_runtime = value; }
+
+        private string m_runtime;
         private string m_ipAddr;
         private int m_port;
+        private long m_bytesServed;
         private string m_rootDir;
         private string m_logFileDir;
-        private string m_bytesServed;
 
     } // ServerSettings
 
